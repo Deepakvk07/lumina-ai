@@ -1,21 +1,198 @@
-// Lumina AI - In-Page Content Script & Shadow DOM Overlay
+// Lumina AI Content Script (Shadow DOM + Background Port Proxy)
 
 (() => {
-  if (window.__LUMINA_INJECTED__) return;
-  window.__LUMINA_INJECTED__ = true;
+  if (document.getElementById('lumina-overlay-root')) return;
 
-  // 1. Create Host Element & Shadow Root for 100% style isolation
-  const host = document.createElement('lumina-overlay-root');
-  const shadow = host.attachShadow({ mode: 'open' });
+  const host = document.createElement('div');
+  host.id = 'lumina-overlay-root';
   document.documentElement.appendChild(host);
 
-  // 2. Fetch or inject styles
-  const styleLink = document.createElement('link');
-  styleLink.rel = 'stylesheet';
-  styleLink.href = chrome.runtime.getURL('content.css');
-  shadow.appendChild(styleLink);
+  const shadow = host.attachShadow({ mode: 'open' });
 
-  // 3. Create Container
+  // Inline stylesheet so it NEVER fails on cross-origin security
+  const style = document.createElement('style');
+  style.textContent = `
+#lumina-floating-container {
+  position: fixed !important;
+  top: 20px !important;
+  right: 20px !important;
+  width: 440px !important;
+  max-width: 90vw !important;
+  background: #ffffff !important;
+  border: 1px solid #e5e7eb !important;
+  border-radius: 16px !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.1) !important;
+  color: #111827 !important;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+  font-size: 13px !important;
+  z-index: 2147483647 !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+}
+
+#lumina-floating-container.hidden { display: none !important; }
+#lumina-floating-container.minimized #lumina-body { display: none !important; }
+
+#lumina-header {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 10px 14px !important;
+  background: #f9fafb !important;
+  border-bottom: 1px solid #f3f4f6 !important;
+  cursor: move !important;
+  user-select: none !important;
+}
+
+.lumina-brand {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  font-weight: 700 !important;
+  font-size: 13px !important;
+  color: #1e1b4b !important;
+}
+
+.lumina-logo-badge {
+  background: #4f46e5 !important;
+  color: white !important;
+  padding: 2px 6px !important;
+  border-radius: 6px !important;
+  font-size: 11px !important;
+  font-weight: 800 !important;
+}
+
+.lumina-header-actions {
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+}
+
+.lumina-icon-btn {
+  background: white !important;
+  border: 1px solid #e5e7eb !important;
+  border-radius: 6px !important;
+  padding: 3px 8px !important;
+  font-size: 11px !important;
+  color: #4b5563 !important;
+  cursor: pointer !important;
+}
+
+.lumina-icon-btn:hover {
+  background: #f3f4f6 !important;
+  color: #4f46e5 !important;
+}
+
+#lumina-body {
+  padding: 12px 14px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 10px !important;
+  box-sizing: border-box !important;
+}
+
+.lumina-toolbar {
+  display: flex !important;
+  gap: 8px !important;
+}
+
+.lumina-btn-primary {
+  flex: 1 !important;
+  background: #4f46e5 !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 8px !important;
+  padding: 9px 12px !important;
+  font-weight: 600 !important;
+  font-size: 12px !important;
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.lumina-btn-primary:hover { background: #4338ca !important; }
+
+.lumina-btn-secondary {
+  background: #f3f4f6 !important;
+  color: #374151 !important;
+  border: 1px solid #e5e7eb !important;
+  border-radius: 8px !important;
+  padding: 9px 12px !important;
+  font-weight: 500 !important;
+  font-size: 12px !important;
+  cursor: pointer !important;
+}
+
+.lumina-btn-secondary:hover { background: #e5e7eb !important; }
+
+#lumina-input {
+  width: 100% !important;
+  box-sizing: border-box !important;
+  padding: 8px 10px !important;
+  border: 1px solid #d1d5db !important;
+  border-radius: 8px !important;
+  font-size: 12px !important;
+  color: #111827 !important;
+  background: #f9fafb !important;
+  resize: vertical !important;
+  min-height: 48px !important;
+  outline: none !important;
+  font-family: inherit !important;
+}
+
+#lumina-input:focus { border-color: #4f46e5 !important; background: #ffffff !important; }
+
+#lumina-output-card {
+  background: #f8fafc !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 10px !important;
+  overflow: hidden !important;
+}
+
+.lumina-output-header {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 6px 10px !important;
+  background: #f1f5f9 !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  color: #475569 !important;
+}
+
+#lumina-output-text {
+  padding: 10px 12px !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  line-height: 1.5 !important;
+  color: #0f172a !important;
+  max-height: 200px !important;
+  overflow-y: auto !important;
+  white-space: pre-wrap !important;
+  user-select: text !important;
+}
+
+.lumina-footer {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  font-size: 11px !important;
+  color: #9ca3af !important;
+}
+
+.lumina-shortcut-badge {
+  background: #f3f4f6 !important;
+  border: 1px solid #e5e7eb !important;
+  padding: 1px 4px !important;
+  border-radius: 4px !important;
+  color: #4f46e5 !important;
+  font-family: monospace !important;
+}
+`;
+  shadow.appendChild(style);
+
   const container = document.createElement('div');
   container.id = 'lumina-floating-container';
   container.innerHTML = `
@@ -46,22 +223,19 @@
       <div id="lumina-output-card">
         <div class="lumina-output-header">
           <span>🎯 VERIFIED ANSWER</span>
-          <button class="lumina-icon-btn" id="lumina-copy-btn" title="Copy Answer" style="width: auto; padding: 0 6px;">📋 Copy</button>
+          <button class="lumina-icon-btn" id="lumina-copy-btn" title="Copy Answer">📋 Copy</button>
         </div>
-        <div id="lumina-output-text">
-          <div class="lumina-placeholder">Click <b>Scan & Solve Tab</b> or paste screenshot (Ctrl+V)</div>
-        </div>
+        <div id="lumina-output-text">Click <b>Scan & Solve Tab</b> (Alt+S) or paste screenshot (Ctrl+V)</div>
       </div>
 
       <div class="lumina-footer">
-        <span>Shortcuts: <span class="lumina-shortcut-badge">Alt+S</span> Scan | <span class="lumina-shortcut-badge">Alt+H</span> Hide</span>
+        <span><span class="lumina-shortcut-badge">Alt+S</span> Scan | <span class="lumina-shortcut-badge">Alt+H</span> Hide</span>
         <span id="lumina-status-dot" style="color: #10b981; font-weight: 600;">● Engine Ready</span>
       </div>
     </div>
   `;
   shadow.appendChild(container);
 
-  // 4. Element references
   const header = shadow.getElementById('lumina-header');
   const minBtn = shadow.getElementById('lumina-min-btn');
   const hideBtn = shadow.getElementById('lumina-hide-btn');
@@ -76,7 +250,7 @@
   let isMinimized = false;
   let isSolving = false;
 
-  // 5. Draggable logic
+  // Draggable logic
   let isDragging = false;
   let startX, startY, initialLeft, initialTop;
 
@@ -93,18 +267,13 @@
 
   window.addEventListener('mousemove', (e) => {
     if (!isDragging) return;
-    const dx = e.clientX - startX;
-    const dy = e.clientY - startY;
-    container.style.left = `${Math.max(10, initialLeft + dx)}px`;
-    container.style.top = `${Math.max(10, initialTop + dy)}px`;
+    container.style.left = `${Math.max(10, initialLeft + (e.clientX - startX))}px`;
+    container.style.top = `${Math.max(10, initialTop + (e.clientY - startY))}px`;
     container.style.right = 'auto';
   });
 
-  window.addEventListener('mouseup', () => {
-    isDragging = false;
-  });
+  window.addEventListener('mouseup', () => { isDragging = false; });
 
-  // 6. UI Actions
   minBtn.addEventListener('click', () => {
     isMinimized = !isMinimized;
     container.classList.toggle('minimized', isMinimized);
@@ -121,73 +290,50 @@
 
   copyBtn.addEventListener('click', () => {
     const text = outputText.innerText;
-    if (text && !text.includes('Click Scan & Solve')) {
+    if (text) {
       navigator.clipboard.writeText(text);
       copyBtn.textContent = '✓ Copied';
       setTimeout(() => { copyBtn.textContent = '📋 Copy'; }, 1500);
     }
   });
 
-  // 7. Solving Logic
-  const solveContent = async (text, imageBase64) => {
+  // Solve using Background Port (NO Mixed Content issues!)
+  const solveContent = (text, imageBase64) => {
     if (isSolving) return;
     isSolving = true;
     scanBtn.disabled = true;
-    scanBtn.innerHTML = '<span>⏳ Solving 99%+ Accuracy...</span>';
-    outputText.innerHTML = '<div class="lumina-loading-pulse">✨ Analyzing question & calculating with 120B Math Reasoner...</div>';
+    scanBtn.textContent = '⏳ Solving...';
+    outputText.textContent = '✨ Analyzing question & calculating with 120B Math Reasoner...';
 
-    try {
-      const storage = await chrome.storage.local.get(['backend_url']);
-      const backendUrl = storage.backend_url || 'http://127.0.0.1:8765';
+    const payload = {
+      question: text || 'Solve visible problem and output ONLY the option numbers and answers.',
+      image_base64: imageBase64 || null,
+      category: 'auto',
+      answer_style: 'option_only'
+    };
 
-      const payload = {
-        question: text || 'Solve visible problem and output ONLY the option numbers and answers.',
-        image_base64: imageBase64 || null,
-        category: 'auto',
-        answer_style: 'option_only'
-      };
+    const port = chrome.runtime.connect({ name: 'LUMINA_SOLVER_STREAM' });
+    let firstToken = true;
 
-      const res = await fetch(`${backendUrl}/api/solve`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-
-      if (!res.ok) {
-        throw new Error(`Server returned ${res.status}`);
-      }
-
-      outputText.textContent = '';
-      const reader = res.body.getReader();
-      const decoder = new TextDecoder();
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        const chunk = decoder.decode(value, { stream: true });
-        const lines = chunk.split('\n');
-        for (const line of lines) {
-          if (!line.startsWith('data: ')) continue;
-          const token = line.slice(6);
-          if (token === '[DONE]') break;
-          const restored = token.replaceAll('⏎', '\n');
-          outputText.textContent += restored;
+    port.onMessage.addListener((msg) => {
+      if (msg.error) {
+        outputText.textContent = `⚠️ ${msg.error}`;
+      } else if (msg.token) {
+        if (firstToken) {
+          outputText.textContent = '';
+          firstToken = false;
         }
+        outputText.textContent += msg.token;
+      } else if (msg.done) {
+        isSolving = false;
+        scanBtn.disabled = false;
+        scanBtn.textContent = '⚡ Scan & Solve Tab';
       }
+    });
 
-      if (!outputText.textContent.trim()) {
-        outputText.textContent = '🎯 Completed.';
-      }
-    } catch (err) {
-      outputText.innerHTML = `<span style="color: #ef4444;">⚠️ Error: ${err.message}. Ensure Lumina backend is running at http://127.0.0.1:8765</span>`;
-    } finally {
-      isSolving = false;
-      scanBtn.disabled = false;
-      scanBtn.innerHTML = '<span>⚡ Scan & Solve Tab</span>';
-    }
+    port.postMessage({ action: 'START_SOLVE', payload });
   };
 
-  // 8. Scan Tab Screenshot Handler
   const triggerTabScan = () => {
     chrome.runtime.sendMessage({ action: 'CAPTURE_VISIBLE_TAB' }, (res) => {
       if (res && res.dataUrl) {
@@ -200,7 +346,6 @@
 
   scanBtn.addEventListener('click', triggerTabScan);
 
-  // 9. DOM Extractor
   const extractAndSolveDOM = () => {
     const selectors = [
       '.question', '.problem-statement', '.mcq-question', '[data-cy="question-title"]',
@@ -231,7 +376,6 @@
 
   domBtn.addEventListener('click', extractAndSolveDOM);
 
-  // 10. Paste Listener
   inputEl.addEventListener('keydown', (e) => {
     if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
       e.preventDefault();
@@ -256,7 +400,6 @@
     }
   });
 
-  // 11. Listen for Background messages (Alt+S, Alt+H, Context Menu)
   chrome.runtime.onMessage.addListener((req) => {
     if (req.action === 'TOGGLE_OVERLAY') {
       toggleHide();
@@ -275,5 +418,4 @@
       extractAndSolveDOM();
     }
   });
-
 })();

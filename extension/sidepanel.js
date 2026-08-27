@@ -1,4 +1,4 @@
-// Lumina Side Panel Script
+// Lumina Side Panel Script (using Background Port Stream)
 
 document.addEventListener('DOMContentLoaded', () => {
   const scanBtn = document.getElementById('btn-scan');
@@ -6,56 +6,46 @@ document.addEventListener('DOMContentLoaded', () => {
   const outputText = document.getElementById('output-text');
   const copyBtn = document.getElementById('btn-copy');
 
-  const solve = async (text, imageBase64) => {
+  let isSolving = false;
+
+  const solve = (text, imageBase64) => {
+    if (isSolving) return;
+    isSolving = true;
     scanBtn.disabled = true;
-    scanBtn.textContent = '⏳ Solving with 99%+ Accuracy...';
+    scanBtn.textContent = '⏳ Solving...';
     outputText.textContent = '✨ Analyzing question & calculating with 120B Math Reasoner...';
 
-    try {
-      const storage = await chrome.storage.local.get(['backend_url']);
-      const backendUrl = storage.backend_url || 'http://127.0.0.1:8765';
+    const payload = {
+      question: text || 'Solve visible problem and output ONLY the option numbers and answers.',
+      image_base64: imageBase64 || null,
+      category: 'auto',
+      answer_style: 'option_only'
+    };
 
-      const payload = {
-        question: text || 'Solve visible problem and output ONLY the option numbers and answers.',
-        image_base64: imageBase64 || null,
-        category: 'auto',
-        answer_style: 'option_only'
-      };
+    const port = chrome.runtime.connect({ name: 'LUMINA_SOLVER_STREAM' });
+    let firstToken = true;
 
-      const res = await fetch(`${backendUrl}/api/solve`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-
-      if (!res.ok) throw new Error(`Server status ${res.status}`);
-
-      outputText.textContent = '';
-      const reader = res.body.getReader();
-      const decoder = new TextDecoder();
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        const chunk = decoder.decode(value, { stream: true });
-        const lines = chunk.split('\n');
-        for (const line of lines) {
-          if (!line.startsWith('data: ')) continue;
-          const token = line.slice(6);
-          if (token === '[DONE]') break;
-          outputText.textContent += token.replaceAll('⏎', '\n');
+    port.onMessage.addListener((msg) => {
+      if (msg.error) {
+        outputText.textContent = ⚠️ ;
+      } else if (msg.token) {
+        if (firstToken) {
+          outputText.textContent = '';
+          firstToken = false;
         }
+        outputText.textContent += msg.token;
+      } else if (msg.done) {
+        isSolving = false;
+        scanBtn.disabled = false;
+        scanBtn.textContent = '⚡ Scan & Solve Active Page';
       }
-    } catch (err) {
-      outputText.textContent = `⚠️ Error: ${err.message}. Ensure Lumina backend is running at http://127.0.0.1:8765`;
-    } finally {
-      scanBtn.disabled = false;
-      scanBtn.textContent = '⚡ Scan & Solve Active Page';
-    }
+    });
+
+    port.postMessage({ action: 'START_SOLVE', payload });
   };
 
   scanBtn.addEventListener('click', async () => {
-    chrome.tabs.captureVisibleTab(null, { format: 'jpeg', quality: 80 }, (dataUrl) => {
+    chrome.tabs.captureVisibleTab(null, { format: 'jpeg', quality: 75 }, (dataUrl) => {
       if (dataUrl) {
         solve(inputEl.value.trim() || 'Solve question in screenshot.', dataUrl);
       }
