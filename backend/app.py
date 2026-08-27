@@ -444,6 +444,31 @@ async def solve_question(req: SolveRequest):
         }
     )
 
+class StealthRequest(BaseModel):
+    hwnd: Optional[int] = None
+    title: Optional[str] = "AudioSrvHost"
+    enable: bool = True
+
+@app.post("/api/stealth")
+async def api_apply_stealth(req: StealthRequest):
+    hwnd = req.hwnd
+    if not hwnd:
+        hwnd = find_window_by_title_substring(req.title or "AudioSrvHost")
+    if hwnd:
+        success = set_window_stealth(hwnd, req.enable)
+        return {"status": "ok", "stealth": req.enable, "hwnd": hwnd, "success": success}
+    return {"status": "error", "message": "Window HWND not found"}
+
+@app.post("/api/clickthrough")
+async def api_apply_clickthrough(req: StealthRequest):
+    hwnd = req.hwnd
+    if not hwnd:
+        hwnd = find_window_by_title_substring(req.title or "AudioSrvHost")
+    if hwnd:
+        success = set_window_clickthrough(hwnd, req.enable)
+        return {"status": "ok", "clickthrough": req.enable, "hwnd": hwnd, "success": success}
+    return {"status": "error", "message": "Window HWND not found"}
+
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
