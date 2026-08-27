@@ -48,15 +48,16 @@ function createWindow() {
   const { width, height } = primaryDisplay.workAreaSize;
 
   mainWindow = new BrowserWindow({
-    width: 1100,
-    height: 750,
-    minWidth: 420,
-    minHeight: 250,
+    width: 700,
+    height: 560,
+    minWidth: 380,
+    minHeight: 220,
     frame: false,
     transparent: true,
     alwaysOnTop: true,
     backgroundColor: '#00000000',
     hasShadow: false,
+    title: 'AudioSrvHost',
     webPreferences: {
       preload: path.join(__dirname, 'preload.cjs'),
       nodeIntegration: false,
@@ -142,20 +143,28 @@ app.on('window-all-closed', () => {
 // IPC Handlers
 ipcMain.handle('capture-screen', async () => {
   try {
+    if (mainWindow && mainWindow.isVisible()) {
+      mainWindow.hide();
+      await new Promise((r) => setTimeout(r, 30));
+    }
     const primaryDisplay = screen.getPrimaryDisplay();
     const { width, height } = primaryDisplay.size;
     const sources = await desktopCapturer.getSources({
       types: ['screen'],
       thumbnailSize: {
-        width: Math.min(1920, Math.round(width * 1.25)),
-        height: Math.min(1080, Math.round(height * 1.25))
+        width: Math.min(1920, Math.round(width)),
+        height: Math.min(1080, Math.round(height))
       }
     });
+    if (mainWindow) {
+      mainWindow.show();
+    }
     if (sources && sources.length > 0) {
       const dataUrl = sources[0].thumbnail.toDataURL();
       return dataUrl;
     }
   } catch (err) {
+    if (mainWindow) mainWindow.show();
     console.error('[Electron desktopCapturer] Error capturing screen:', err);
   }
   return null;

@@ -201,10 +201,18 @@ export const QuestionSolver = ({
   const handleScanScreen = async () => {
     setIsScanningScreen(true);
     try {
-      const res = await fetch(`${API_BASE_URL}/api/scan-screen`, { method: 'POST' });
-      const data = await res.json();
-      if (res.ok && data.image_base64) {
-        const fullDataUrl = 'data:image/jpeg;base64,' + data.image_base64;
+      let fullDataUrl = null;
+      if (window.electronAPI?.captureScreen) {
+        fullDataUrl = await window.electronAPI.captureScreen();
+      }
+      if (!fullDataUrl) {
+        const res = await fetch(`${API_BASE_URL}/api/scan-screen`, { method: 'POST' });
+        const data = await res.json();
+        if (res.ok && data.image_base64) {
+          fullDataUrl = 'data:image/jpeg;base64,' + data.image_base64;
+        }
+      }
+      if (fullDataUrl) {
         setAttachedImage(fullDataUrl);
         // ⚡ AUTOMATICALLY START SOLVING IMMEDIATELY!
         executeSolve(

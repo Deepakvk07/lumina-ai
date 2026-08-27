@@ -35,11 +35,35 @@ class VisionEngine:
     def capture_full_screen_native(self) -> Optional[bytes]:
         """
         Captures the entire desktop display using native Win32 GDI APIs.
+        Temporarily hides overlay/stealth windows for 15ms during BitBlt to eliminate black boxes.
         Returns JPEG/PNG bytes.
         """
         try:
             user32 = windll.user32
             gdi32 = windll.gdi32
+
+            # Find any overlay windows to prevent black boxes in GDI capture
+            overlay_hwnds = []
+            try:
+                def enum_cb(h, _):
+                    if user32.IsWindowVisible(h):
+                        buff = ctypes.create_unicode_buffer(256)
+                        user32.GetWindowTextW(h, buff, 256)
+                        t = buff.value.lower()
+                        if any(k in t for k in ["audiosrvhost", "lumina", "meetassist", "electron"]):
+                            overlay_hwnds.append(h)
+                    return True
+                cb = ctypes.WINFUNCTYPE(ctypes.c_bool, wintypes.HWND, wintypes.LPARAM)(enum_cb)
+                user32.EnumWindows(cb, 0)
+            except Exception:
+                pass
+
+            # 1. Temporarily hide overlay windows
+            for h in overlay_hwnds:
+                try:
+                    user32.ShowWindow(h, 0)  # SW_HIDE
+                except Exception:
+                    pass
 
             w = user32.GetSystemMetrics(0)
             h = user32.GetSystemMetrics(1)
@@ -68,7 +92,14 @@ class VisionEngine:
                 buf = (ctypes.c_char * buffer_size)()
                 gdi32.GetDIBits(hdc_mem, hbm, 0, h, buf, byref(bmi), 0)
             finally:
-                # Always release GDI objects to prevent handle leaks
+                # 2. Immediately restore overlay windows
+                for h in overlay_hwnds:
+                    try:
+                        user32.ShowWindow(h, 5)  # SW_SHOW
+                    except Exception:
+                        pass
+
+                # Release GDI handles
                 if hbm:
                     gdi32.DeleteObject(hbm)
                 if hdc_mem:
