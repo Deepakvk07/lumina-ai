@@ -1,0 +1,33 @@
+{
+  "target_position": "Software Engineer / Data Scientist",
+  "language": "en-US",
+  "answer_depth": "short",
+  "answer_format": "full_sentences",
+  "candidate_resume": "",
+  "job_description": "",
+  "candidate_skills": "",
+  "llm_provider": "groq",
+  "llm_model": "openai/gpt-oss-120b",
+  "groq_vision_model": "qwen/qwen3.8-27b",
+  "stt_provider": "groq",
+  "stt_model": "whisper-large-v3-turbo",
+  "gemini_api_key": "",
+  "groq_api_key": "",
+  "openai_api_key": "",
+  "anthropic_api_key": "",
+  "hud_opacity": 0.9,
+  "hud_font_size": 15,
+  "stealth_enabled": true,
+  "eye_contact_mode": false,
+  "speculative_enabled": true,
+  "live_code_mode": true,
+  "click_through": false,
+  "vad_silence_threshold_ms": 350,
+  "vad_energy_threshold": 0.0035,
+  "hotkeys": {
+    "panic_hide": "Ctrl+Shift+H",
+    "snip_screen": "Ctrl+Shift+S",
+    "push_transcribe": "Ctrl+Space",
+    "toggle_clickthrough": "Ctrl+Shift+T"
+  }
+}
