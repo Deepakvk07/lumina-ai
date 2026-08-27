@@ -48,8 +48,8 @@ speculative_state = {
 
 QUESTION_STARTERS = ("what", "how", "why", "can", "could", "explain", "describe", "is", "are", "write", "implement", "design", "tell", "difference", "compare")
 
-# Automatic loopback listening — always active
-loopback_listening: bool = True
+# Automatic loopback listening — enabled only when in Voice HUD
+loopback_listening: bool = False
 
 def safe_create_task(coro):
     """Creates an asyncio task and keeps a strong reference to prevent GC."""
@@ -104,6 +104,8 @@ async def run_speculative_stream(partial_q: str):
         speculative_state["is_streaming"] = False
 
 async def process_interim_segment_async(wav_bytes: bytes, source: str):
+    if not loopback_listening:
+        return
     text = await asyncio.to_thread(stt_engine.transcribe, wav_bytes)
     if not text or len(text.strip()) < 2:
         return
@@ -116,6 +118,8 @@ async def process_interim_segment_async(wav_bytes: bytes, source: str):
 
 def handle_speech_segment(wav_bytes: bytes, source: str):
     """Callback when speech is finished and ready for transcription."""
+    if not loopback_listening:
+        return
     logger.info(f"[Audio] Speech segment captured from {source} ({len(wav_bytes)} bytes)")
     if loop:
         asyncio.run_coroutine_threadsafe(process_speech_segment_async(wav_bytes, source), loop)
@@ -282,6 +286,22 @@ async def get_devices():
 @app.get("/api/listen/state")
 async def get_listen_state():
     return {"listening": loopback_listening}
+
+@app.post("/api/listen/start")
+async def start_listen():
+    global loopback_listening
+    loopback_listening = True
+    logger.info("[Listen] Audio listening STARTED")
+    await broadcast_ws({"type": "listen_state", "listening": True})
+    return {"listening": True}
+
+@app.post("/api/listen/stop")
+async def stop_listen():
+    global loopback_listening
+    loopback_listening = False
+    logger.info("[Listen] Audio listening STOPPED")
+    await broadcast_ws({"type": "listen_state", "listening": False})
+    return {"listening": False}
 
 @app.post("/api/listen/toggle")
 async def toggle_listen():

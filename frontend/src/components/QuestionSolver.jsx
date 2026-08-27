@@ -197,22 +197,21 @@ export const QuestionSolver = ({
     }
   };
 
+  useEffect(() => {
+    // Mute background loopback audio when Question Solver is active to dedicate 100% bandwidth to instant solving
+    fetch(`${API_BASE_URL}/api/listen/stop`, { method: 'POST' }).catch(() => {});
+  }, []);
+
   // 1-Click Scan Full Screen / Entire Website — AUTO SOLVES IMMEDIATELY!
   const handleScanScreen = async () => {
     setIsScanningScreen(true);
+    setSolverAnswer('');
     try {
-      let fullDataUrl = null;
-      if (window.electronAPI?.captureScreen) {
-        fullDataUrl = await window.electronAPI.captureScreen();
-      }
-      if (!fullDataUrl) {
-        const res = await fetch(`${API_BASE_URL}/api/scan-screen`, { method: 'POST' });
-        const data = await res.json();
-        if (res.ok && data.image_base64) {
-          fullDataUrl = 'data:image/jpeg;base64,' + data.image_base64;
-        }
-      }
-      if (fullDataUrl) {
+      const res = await fetch(`${API_BASE_URL}/api/scan-screen`, { method: 'POST' });
+      if (!res.ok) throw new Error('Screen capture failed');
+      const data = await res.json();
+      if (data.image_base64) {
+        const fullDataUrl = 'data:image/jpeg;base64,' + data.image_base64;
         setAttachedImage(fullDataUrl);
         // ⚡ AUTOMATICALLY START SOLVING IMMEDIATELY!
         executeSolve(

@@ -170,7 +170,7 @@ export const StealthHUD = ({
       setIsListening(!!data.listening);
     });
 
-    fetch(`${API_BASE_URL}/api/listen/state`)
+    fetch(`${API_BASE_URL}/api/listen/start`, { method: 'POST' })
       .then(r => r.json())
       .then(d => setIsListening(!!d.listening))
       .catch(() => {});
