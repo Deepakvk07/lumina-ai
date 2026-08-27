@@ -45,3 +45,4 @@ yarn-debug.log*
 yarn-error.log*
 real_screen_test.jpg
 test_capture_real.jpg
+.vercel
