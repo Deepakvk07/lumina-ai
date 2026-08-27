@@ -101,36 +101,29 @@ Target Language: {language}
     return prompt
 
 def build_solver_system_prompt(category: str = "auto", answer_style: str = "option_only") -> str:
-    return """You are an elite, competition-grade mathematical, quantitative aptitude, logical reasoning, and DSA problem-solving engine.
-YOUR PRIME DIRECTIVE IS 100% MATHEMATICAL & LOGICAL ACCURACY (99%+ precision).
+    return """You are an ultra-fast, competition-grade mathematical, quantitative aptitude, and logical reasoning solver.
+YOUR PRIME DIRECTIVE IS 100% MATHEMATICAL PRECISION AND DIRECT STREAMING OUTPUT.
 
-### MANDATORY REASONING PROTOCOL:
-1. **INTERNAL REASONING SCRATCHPAD**:
-   You MUST perform your complete calculations and logical deduction inside <thought>...</thought> tags:
-   - If an image/screenshot is provided: carefully transcribe every single number, symbol, digit, variable, and option choice (A, B, C, D) exactly.
-   - Identify the exact mathematical category, governing formula, and underlying rules (e.g. Number Series, Time & Work, Speed-Distance, Profit & Loss, Percentages, Permutations, Probability, Syllogisms).
-   - Perform all arithmetic step-by-step and double-check your calculations.
-   - Match your final calculated number to the exact option letter (A, B, C, or D).
-   - Verify why all distractor options are incorrect.
+### MANDATORY OUTPUT FORMAT:
+- For Single MCQ / Aptitude / Reasoning Question:
+  Start immediately on Line 1 with the verified answer:
+  **🎯 Option [A/B/C/D] — [Value/Text]**
+  *(Short 1-line key calculation / proof)*
 
-2. **FINAL USER OUTPUT (AFTER </thought>)**:
-   After the </thought> tag, output ONLY the verified final answer in clean plain text:
-   - **For Single Question / MCQ**:
-     **🎯 Option [A/B/C/D] — [Value/Text]**
-   - **For Multiple Questions on Screen / Webpage**:
-     - **Q1: Option [A/B/C/D] — [Value]**
-     - **Q2: Option [A/B/C/D] — [Value]**
-     - **Q3: Option [A/B/C/D] — [Value]**
-   - **For Coding / DSA**:
-     `⏱️ Time: O(...) | 💾 Space: O(...)`
-     ```[language]
-     // Complete optimal code
-     ```
+- For Multiple Questions on Screen / Webpage:
+  - **Q1: Option [A/B/C/D] — [Value]** *(proof)*
+  - **Q2: Option [A/B/C/D] — [Value]** *(proof)*
+  - **Q3: Option [A/B/C/D] — [Value]** *(proof)*
 
-3. **STRICT RULES**:
-   - NEVER use LaTeX syntax or math delimiters (NO $, $$, \\text{}, \\frac{}).
-   - ZERO conversational filler outside </thought>.
-   - Start immediately with **🎯 Option...** on line 1 after </thought>.
+- For Coding / DSA:
+  `⏱️ Time: O(...) | 💾 Space: O(...)`
+  ```[language]
+  // Optimal code
+  ```
+
+### STRICT RULES:
+1. NEVER use LaTeX syntax (NO $, $$, \\text{}, \\frac{}). Use clean plain text (e.g. 43/65, 5 days, 18*7+6).
+2. Start directly with the verified answer on Line 1. Zero conversational filler.
 """
 
 
@@ -546,66 +539,21 @@ class LLMEngine:
                         yield "*(Rate limit reached. Please wait a few seconds and try again.)*\n\n"
                         return
 
-                    buf = ""
-                    in_thought = False
+                    in_think = False
                     async for chunk in stream:
                         delta = chunk.choices[0].delta.content or ""
-                        buf += delta
-                        while buf:
-                            if not in_thought:
-                                # Look for <thought> or <think>
-                                tag_start = -1
-                                tag_len = 0
-                                for open_tag in ["<thought>", "<think>"]:
-                                    pos = buf.find(open_tag)
-                                    if pos != -1 and (tag_start == -1 or pos < tag_start):
-                                        tag_start = pos
-                                        tag_len = len(open_tag)
-                                
-                                if tag_start != -1:
-                                    if tag_start > 0:
-                                        clean_seg = clean_math_delimiters(buf[:tag_start])
-                                        if clean_seg:
-                                            yield clean_seg
-                                    buf = buf[tag_start + tag_len:]
-                                    in_thought = True
-                                else:
-                                    # Check partial open tag
-                                    partial = False
-                                    for open_tag in ["<thought>", "<think>"]:
-                                        for i in range(1, len(open_tag)):
-                                            if buf.endswith(open_tag[:i]):
-                                                partial = True
-                                                break
-                                    if partial:
-                                        break
-                                    else:
-                                        clean_seg = clean_math_delimiters(buf)
-                                        if clean_seg:
-                                            yield clean_seg
-                                        buf = ""
-                            else:
-                                # Look for </thought> or </think>
-                                tag_end = -1
-                                tag_len = 0
-                                for close_tag in ["</thought>", "</think>"]:
-                                    pos = buf.find(close_tag)
-                                    if pos != -1 and (tag_end == -1 or pos < tag_end):
-                                        tag_end = pos
-                                        tag_len = len(close_tag)
-                                
-                                if tag_end != -1:
-                                    buf = buf[tag_end + tag_len:]
-                                    in_thought = False
-                                else:
-                                    if len(buf) > 20:
-                                        buf = buf[-15:]
-                                    break
-                    
-                    if buf and not in_thought:
-                        clean_seg = clean_math_delimiters(buf)
-                        if clean_seg:
-                            yield clean_seg
+                        if "<think>" in delta or "<thought>" in delta:
+                            in_think = True
+                            continue
+                        if "</think>" in delta or "</thought>" in delta:
+                            in_think = False
+                            delta = delta.split(">")[-1]
+                        if in_think:
+                            continue
+                        if delta:
+                            clean_seg = clean_math_delimiters(delta)
+                            if clean_seg:
+                                yield clean_seg
                     return
                 except Exception as e:
                     logger.error(f"[Solver Groq] Error: {e}")

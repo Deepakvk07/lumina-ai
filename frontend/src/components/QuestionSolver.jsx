@@ -575,6 +575,12 @@ export const QuestionSolver = ({
                     </ReactMarkdown>
                     <div ref={answerEndRef} />
                   </>
+                ) : isGenerating ? (
+                  <div className="py-6 text-center text-indigo-600 animate-pulse space-y-2">
+                    <Sparkles className="w-5 h-5 mx-auto animate-spin text-indigo-600" />
+                    <p className="font-bold text-xs text-indigo-700">Solving question with 100% precision...</p>
+                    <p className="text-[10.5px] text-gray-400">Verifying mathematical formulas & options...</p>
+                  </div>
                 ) : (
                   <div className="py-5 text-center text-gray-400 text-xs font-normal">
                     <Zap className="w-5 h-5 mx-auto mb-1 text-indigo-400/40" />
