@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Lumina Side Panel</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f9fafb;
+      color: #111827;
+      padding: 12px;
+      font-size: 13px;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #e5e7eb;
+      margin-bottom: 10px;
+    }
+    .brand {
+      font-weight: 700;
+      font-size: 14px;
+      color: #1e1b4b;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .badge {
+      background: #4f46e5;
+      color: white;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 800;
+    }
+    .btn-scan {
+      background: #4f46e5;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-weight: 600;
+      font-size: 12px;
+      cursor: pointer;
+      width: 100%;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .btn-scan:hover { background: #4338ca; }
+    textarea {
+      width: 100%;
+      height: 70px;
+      padding: 8px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 12px;
+      outline: none;
+      resize: none;
+      margin-bottom: 8px;
+      background: white;
+    }
+    textarea:focus { border-color: #4f46e5; }
+    .output-card {
+      flex: 1;
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    }
+    .output-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 10px;
+      background: #f3f4f6;
+      border-bottom: 1px solid #e5e7eb;
+      font-size: 11px;
+      font-weight: 700;
+      color: #4b5563;
+    }
+    .output-body {
+      flex: 1;
+      padding: 10px;
+      overflow-y: auto;
+      font-size: 13px;
+      font-weight: 600;
+      line-height: 1.5;
+      color: #111827;
+      white-space: pre-wrap;
+    }
+    .copy-btn {
+      background: white;
+      border: 1px solid #d1d5db;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 11px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="brand">
+      <span class="badge">LUMINA</span>
+      <span>Side Panel</span>
+    </div>
+    <span style="color: #10b981; font-weight: 600; font-size: 11px;">● Ready</span>
+  </div>
+
+  <button class="btn-scan" id="btn-scan">⚡ Scan & Solve Active Page</button>
+  <textarea id="prompt-input" placeholder="Paste screenshot (Ctrl+V) or type question..."></textarea>
+
+  <div class="output-card">
+    <div class="output-header">
+      <span>🎯 VERIFIED ANSWER</span>
+      <button class="copy-btn" id="btn-copy">📋 Copy</button>
+    </div>
+    <div class="output-body" id="output-text">Click <b>Scan & Solve</b> to see verified answers.</div>
+  </div>
+
+  <script src="sidepanel.js"></script>
+</body>
+</html>

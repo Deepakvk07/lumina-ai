@@ -1,0 +1,67 @@
+{
+  "manifest_version": 3,
+  "name": "Lumina AI \u2014 Live Assistant & Question Solver",
+  "version": "1.0.0",
+  "description": "Undetectable in-page question solver, tab screenshot solver, and live aptitude/DSA co-pilot.",
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "permissions": [
+    "storage",
+    "activeTab",
+    "scripting",
+    "contextMenus",
+    "sidePanel"
+  ],
+  "host_permissions": [
+    "http://127.0.0.1:8765/*",
+    "http://localhost:8765/*",
+    "https://api.groq.com/*",
+    "https://generativelanguage.googleapis.com/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Lumina AI Solver",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "side_panel": {
+    "default_path": "sidepanel.html"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "css": [
+        "content.css"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
+  "commands": {
+    "scan_and_solve": {
+      "suggested_key": {
+        "default": "Alt+S"
+      },
+      "description": "Scan active webpage & solve questions"
+    },
+    "toggle_overlay": {
+      "suggested_key": {
+        "default": "Alt+H"
+      },
+      "description": "100% Stealth Hide / Show in-page overlay"
+    }
+  }
+}
