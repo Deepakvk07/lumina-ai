@@ -30,10 +30,11 @@ function applyBackendStealth(hwnd, enable = true) {
 
 function getHwndFromBuffer(hwndBuffer) {
   try {
-    if (process.arch === 'x64' || process.arch === 'arm64') {
-      return Number(hwndBuffer.readBigInt64LE(0));
+    if (!hwndBuffer || hwndBuffer.length === 0) return 0;
+    if (hwndBuffer.length >= 8) {
+      return Number(hwndBuffer.readBigUInt64LE(0));
     }
-    return hwndBuffer.readInt32LE(0);
+    return hwndBuffer.readUInt32LE(0);
   } catch (e) {
     try {
       return hwndBuffer.readInt32LE(0);
@@ -66,26 +67,34 @@ function createWindow() {
     }
   });
 
-  // Apply native Win32 WDA_EXCLUDEFROMCAPTURE (0x11) which excludes ONLY this window
-  // without turning the entire screen share black (unlike setContentProtection)!
-  const hwnd = getHwndFromBuffer(mainWindow.getNativeWindowHandle());
-  if (hwnd) {
-    applyBackendStealth(hwnd, true);
-  } else {
-    applyBackendStealth(null, true);
-  }
+  // Apply native Win32 WDA_EXCLUDEFROMCAPTURE (0x11)
+  const applyStealthNow = () => {
+    if (!mainWindow) return;
+    try {
+      const hwnd = getHwndFromBuffer(mainWindow.getNativeWindowHandle());
+      console.log('[Stealth] Applying WDA_EXCLUDEFROMCAPTURE to HWND:', hwnd);
+      if (hwnd) applyBackendStealth(hwnd, true);
+    } catch (e) {
+      console.error('[Stealth error]', e);
+    }
+  };
 
-  // Load dev server or production dist
+  applyStealthNow();
+  mainWindow.once('ready-to-show', applyStealthNow);
+  mainWindow.on('show', applyStealthNow);
+  mainWindow.webContents.on('did-finish-load', applyStealthNow);
+
+  // Load production dist directly if present, or devUrl
   const distPath = path.join(__dirname, '../dist/index.html');
   const devUrl = 'http://localhost:5173';
 
-  mainWindow.loadURL(devUrl).catch(() => {
-    if (fs.existsSync(distPath)) {
-      mainWindow.loadFile(distPath);
-    } else {
+  if (fs.existsSync(distPath)) {
+    mainWindow.loadFile(distPath);
+  } else {
+    mainWindow.loadURL(devUrl).catch(() => {
       setTimeout(() => mainWindow.loadURL(devUrl), 2000);
-    }
-  });
+    });
+  }
 
   // Register Global Hotkeys (unregister first to prevent errors on re-creation)
   globalShortcut.unregisterAll();
