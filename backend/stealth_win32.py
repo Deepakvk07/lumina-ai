@@ -24,8 +24,9 @@ kernel32 = ctypes.windll.kernel32
 
 def set_window_stealth(hwnd: int, enable_stealth: bool = True) -> bool:
     """
-    Sets the window display affinity so it is EXCLUDED from screen capture,
-    screen recording, window shares, and screenshot tools.
+    Sets the window display affinity to WDA_EXCLUDEFROMCAPTURE (0x11)
+    so this specific window is excluded from screen capture,
+    while allowing screen share / Google Meet to capture everything else normally.
     """
     if not hwnd or hwnd == 0:
         logger.warning("Invalid HWND provided to set_window_stealth")
@@ -34,9 +35,6 @@ def set_window_stealth(hwnd: int, enable_stealth: bool = True) -> bool:
     affinity = WDA_EXCLUDEFROMCAPTURE if enable_stealth else WDA_NONE
     try:
         res = user32.SetWindowDisplayAffinity(wintypes.HWND(hwnd), wintypes.DWORD(affinity))
-        if not res and enable_stealth:
-            # Fallback to WDA_MONITOR if WDA_EXCLUDEFROMCAPTURE is not supported on older builds
-            res = user32.SetWindowDisplayAffinity(wintypes.HWND(hwnd), wintypes.DWORD(WDA_MONITOR))
         logger.info(f"SetWindowDisplayAffinity for HWND {hwnd} with affinity {hex(affinity)} -> Result: {bool(res)}")
         return bool(res)
     except Exception as e:

@@ -66,13 +66,13 @@ function createWindow() {
     }
   });
 
-  // Enable Electron hardware content protection (Sets WDA_MONITOR / WDA_EXCLUDEFROMCAPTURE)
-  mainWindow.setContentProtection(true);
-
-  // Apply Win32 WDA_EXCLUDEFROMCAPTURE directly via backend
+  // Apply native Win32 WDA_EXCLUDEFROMCAPTURE (0x11) which excludes ONLY this window
+  // without turning the entire screen share black (unlike setContentProtection)!
   const hwnd = getHwndFromBuffer(mainWindow.getNativeWindowHandle());
   if (hwnd) {
     applyBackendStealth(hwnd, true);
+  } else {
+    applyBackendStealth(null, true);
   }
 
   // Load dev server or production dist
@@ -172,9 +172,9 @@ ipcMain.handle('capture-screen', async () => {
 
 ipcMain.handle('set-stealth', (event, enable) => {
   if (mainWindow) {
-    mainWindow.setContentProtection(enable);
     const hwnd = getHwndFromBuffer(mainWindow.getNativeWindowHandle());
     if (hwnd) applyBackendStealth(hwnd, enable);
+    else applyBackendStealth(null, enable);
     isStealthActive = enable;
   }
   return isStealthActive;
