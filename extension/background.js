@@ -1,49 +1,45 @@
 // Lumina AI Extension Service Worker
 
-// Setup context menus on install
-chrome.runtime.onInstalled.addListener(async () => {
+chrome.runtime.onInstalled.addListener(() => {
   try {
     chrome.contextMenus.removeAll(() => {
       chrome.contextMenus.create({
-        id: 'lumina_toggle_overlay',
-        title: '✨ Toggle Lumina AI Floating Assistant',
+        id: 'lumina_toggle',
+        title: '✨ Toggle Lumina AI on this page',
         contexts: ['all']
       });
     });
-  } catch (err) {}
+  } catch (_) {}
 });
 
-// Toolbar icon click → toggle floating overlay on current tab
-chrome.action.onClicked.addListener(async (tab) => {
+// Re-injecting content.js is the toggle - the IIFE inside handles show/hide.
+async function toggleOnTab(tab) {
   if (!tab || !tab.id) return;
-  if (!tab.url || tab.url.startsWith('chrome://') || tab.url.startsWith('chrome-extension://')) return;
+  const url = tab.url || '';
+  if (url.startsWith('chrome://') || url.startsWith('chrome-extension://') ||
+      url.startsWith('devtools://') || url === '') return;
 
   try {
-    // Inject content script if not already injected
     await chrome.scripting.executeScript({
       target: { tabId: tab.id },
       files: ['content.js']
     });
   } catch (e) {
-    // Already injected - that's fine
+    // Restricted page - silently ignore
   }
+}
 
-  // Toggle the overlay visibility
-  chrome.tabs.sendMessage(tab.id, { action: 'TOGGLE_OVERLAY' }).catch(() => {});
+// Toolbar icon click
+chrome.action.onClicked.addListener((tab) => {
+  toggleOnTab(tab);
 });
 
-// Context menu
+// Right-click context menu
 chrome.contextMenus.onClicked.addListener((info, tab) => {
-  if (!tab || !tab.id) return;
-  if (info.menuItemId === 'lumina_toggle_overlay') {
-    chrome.tabs.sendMessage(tab.id, { action: 'TOGGLE_OVERLAY' }).catch(() => {});
-  }
+  if (info.menuItemId === 'lumina_toggle') toggleOnTab(tab);
 });
 
-// Keyboard shortcut Alt+H
+// Alt+H keyboard shortcut
 chrome.commands.onCommand.addListener((command, tab) => {
-  if (!tab || !tab.id) return;
-  if (command === 'toggle_overlay') {
-    chrome.tabs.sendMessage(tab.id, { action: 'TOGGLE_OVERLAY' }).catch(() => {});
-  }
+  if (command === 'toggle_overlay') toggleOnTab(tab);
 });

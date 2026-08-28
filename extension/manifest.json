@@ -13,7 +13,6 @@
     "activeTab",
     "scripting",
     "contextMenus",
-    "sidePanel",
     "tabs"
   ],
   "host_permissions": [
@@ -27,15 +26,12 @@
     "service_worker": "background.js"
   },
   "action": {
-    "default_title": "Open Lumina AI (Voice HUD & Question Solver)",
+    "default_title": "Toggle Lumina AI on this page",
     "default_icon": {
       "16": "icons/icon16.png",
       "48": "icons/icon48.png",
       "128": "icons/icon128.png"
     }
-  },
-  "side_panel": {
-    "default_path": "sidepanel.html"
   },
   "content_scripts": [
     {
@@ -75,7 +71,7 @@
       "suggested_key": {
         "default": "Alt+H"
       },
-      "description": "Show/Hide Floating Lumina AI Assistant on Page"
+      "description": "Show/Hide Lumina AI Floating Assistant"
     }
   }
 }
