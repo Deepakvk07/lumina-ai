@@ -179,14 +179,23 @@ def optimize_image_bytes(image_bytes: Optional[bytes], max_dim: int = 720) -> Op
         import io
         img = Image.open(io.BytesIO(image_bytes))
         if img.mode != "RGB":
-            img = img.convert("RGB")
+            if img.mode == "RGBA":
+                r, g, b, a = img.split()
+                if a.getextrema() == (0, 0):
+                    img = Image.merge("RGB", (r, g, b))
+                else:
+                    bg = Image.new("RGB", img.size, (255, 255, 255))
+                    bg.paste(img, mask=a)
+                    img = bg
+            else:
+                img = img.convert("RGB")
         w, h = img.size
         if max(w, h) > max_dim:
             scale = max_dim / max(w, h)
             new_w, new_h = max(1, int(w * scale)), max(1, int(h * scale))
             img = img.resize((new_w, new_h), Image.Resampling.BILINEAR)
         out = io.BytesIO()
-        img.save(out, format="JPEG", quality=75, optimize=True)
+        img.save(out, format="JPEG", quality=85, optimize=True)
         return out.getvalue()
     except Exception as e:
         logger.error(f"[optimize_image_bytes] error: {e}")

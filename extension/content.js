@@ -1,4 +1,4 @@
-﻿// Lumina AI Floating In-Page Assistant
+// Lumina AI Floating In-Page Assistant
 // Each re-injection by the toolbar icon = toggle show/hide.
 
 (function () {
@@ -63,12 +63,20 @@
     if (event.data && event.data.type === 'LUMINA_SCAN_PAGE') {
       try {
         var pageText = extractPageContent();
-        frame.contentWindow.postMessage({
-          type: 'LUMINA_SCAN_RESULT',
-          text: pageText,
-          url: window.location.href,
-          title: document.title
-        }, '*');
+        var pageUrl = window.location.href;
+        var pageTitle = document.title;
+
+        // Also capture high-resolution tab screenshot via background
+        chrome.runtime.sendMessage({ action: 'CAPTURE_TAB' }, function(response) {
+          var imageDataUrl = (response && response.dataUrl) ? response.dataUrl : null;
+          frame.contentWindow.postMessage({
+            type: 'LUMINA_SCAN_RESULT',
+            text: pageText,
+            image: imageDataUrl,
+            url: pageUrl,
+            title: pageTitle
+          }, '*');
+        });
       } catch(err) {
         frame.contentWindow.postMessage({
           type: 'LUMINA_SCAN_RESULT',

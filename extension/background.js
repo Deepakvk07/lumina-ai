@@ -43,3 +43,17 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
 chrome.commands.onCommand.addListener((command, tab) => {
   if (command === 'toggle_overlay') toggleOnTab(tab);
 });
+
+// Capture visible tab screenshot for Scan Website / Problem Snip
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  if (request.action === 'CAPTURE_TAB') {
+    chrome.tabs.captureVisibleTab(null, { format: 'jpeg', quality: 90 }, (dataUrl) => {
+      if (chrome.runtime.lastError || !dataUrl) {
+        sendResponse({ error: chrome.runtime.lastError?.message || 'Capture failed' });
+      } else {
+        sendResponse({ dataUrl: dataUrl });
+      }
+    });
+    return true; // Keep message port open for async sendResponse
+  }
+});

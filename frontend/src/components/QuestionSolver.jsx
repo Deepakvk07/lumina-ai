@@ -176,22 +176,47 @@ export const QuestionSolver = ({
     }
   }, [solverAnswer, isGenerating]);
 
-  // Fetch screenshot from clipboard (Win+Shift+S) — AUTO SOLVES IMMEDIATELY!
+  // Fetch screenshot from clipboard (Win+Shift+S or browser clipboard)
   const handleFetchClipboard = async () => {
     setIsFetchingClipboard(true);
+    // 1. Try modern browser clipboard API first
+    try {
+      if (navigator.clipboard && navigator.clipboard.read) {
+        const items = await navigator.clipboard.read();
+        for (const item of items) {
+          for (const type of item.types) {
+            if (type.startsWith('image/')) {
+              const blob = await item.getType(type);
+              const reader = new FileReader();
+              reader.onload = (e) => {
+                const dataUrl = e.target.result;
+                setAttachedImage(dataUrl);
+                executeSolve('', dataUrl);
+              };
+              reader.readAsDataURL(blob);
+              setIsFetchingClipboard(false);
+              return;
+            }
+          }
+        }
+      }
+    } catch (_) {
+      // Fallback to backend API
+    }
+
+    // 2. Fallback to backend clipboard grab
     try {
       const res = await fetch(`${API_BASE_URL}/api/snip-clipboard`, { method: 'POST' });
       const data = await res.json();
       if (res.ok && data.image_base64) {
-        const dataUrl = 'data:image/png;base64,' + data.image_base64;
+        const dataUrl = 'data:image/jpeg;base64,' + data.image_base64;
         setAttachedImage(dataUrl);
-        // ⚡ AUTOMATICALLY START SOLVING IMMEDIATELY!
         executeSolve('', dataUrl);
       } else {
-        alert(data.detail || 'No screenshot in clipboard. Press Win+Shift+S first, then click here.');
+        alert(data.detail || 'No screenshot in clipboard. Press Win+Shift+S first, then click Grab Snip.');
       }
     } catch (err) {
-      alert('Middle-layer backend offline.');
+      alert('Backend offline. Please run start_backend.bat first.');
     } finally {
       setIsFetchingClipboard(false);
     }
@@ -202,19 +227,19 @@ export const QuestionSolver = ({
     fetch(`${API_BASE_URL}/api/listen/stop`, { method: 'POST' }).catch(() => {});
   }, []);
 
-  // 1-Click Scan Full Website — reads page text via content.js postMessage bridge
+  // 1-Click Scan Full Website — reads page DOM text + captures high-res screenshot via content.js
   const handleScanScreen = () => {
     setIsScanningScreen(true);
     setSolverAnswer('');
 
-    // Request page content from content.js running in the host page
+    // Request page content & screenshot from content.js running in the host page
     window.parent.postMessage({ type: 'LUMINA_SCAN_PAGE' }, '*');
 
-    // Listen for the response (content.js sends it back)
+    // Timeout safety
     const timeout = setTimeout(() => {
       setIsScanningScreen(false);
-      setSolverAnswer('Error: Page scan timed out. Make sure the extension is loaded on this page.');
-    }, 6000);
+      setSolverAnswer('Error: Page scan timed out. Make sure the extension is active on this page.');
+    }, 7000);
 
     const handleScanResult = (event) => {
       if (!event.data || event.data.type !== 'LUMINA_SCAN_RESULT') return;
@@ -230,29 +255,30 @@ export const QuestionSolver = ({
       const pageText = event.data.text || '';
       const pageTitle = event.data.title || '';
       const pageUrl = event.data.url || '';
+      const screenshot = event.data.image || null;
 
-      if (!pageText.trim()) {
-        setSolverAnswer('No readable text found on this page.');
+      if (screenshot) {
+        setAttachedImage(screenshot);
+      }
+
+      if (!pageText.trim() && !screenshot) {
+        setSolverAnswer('No readable content found on this page.');
         return;
       }
 
-      const prompt = `You are a quiz/test solver. Below is the full text content of a webpage.
+      const prompt = `You are an expert exam, aptitude, and coding test solver. Analyze this webpage question/problem.
 
-Page: ${pageTitle}
-URL: ${pageUrl}
+Page Title: ${pageTitle}
+Page URL: ${pageUrl}
 
-PAGE CONTENT:
-${pageText}
+${pageText ? `PAGE TEXT:\n${pageText}\n` : ''}
 
----
-TASK: Find ALL questions, MCQs, problems or coding challenges visible on this page. For each one:
-1. State the question briefly
-2. Give the correct answer / option letter
-3. Show working if needed
+TASK: Solve all questions/problems found on this page or screenshot with 100% mathematical precision.
+For each question:
+1. Provide the direct correct Option Letter and Value
+2. Give a brief, step-by-step mathematical proof / logic breakdown`;
 
-Be precise and answer every question you find.`;
-
-      executeSolve(prompt, null);
+      executeSolve(prompt, screenshot);
     };
 
     window.addEventListener('message', handleScanResult);

@@ -132,10 +132,18 @@ class VisionEngine:
         try:
             img = ImageGrab.grabclipboard()
             if isinstance(img, Image.Image):
-                buf = io.BytesIO()
-                if img.mode in ("RGBA", "P"):
+                if img.mode == "RGBA":
+                    r, g, b, a = img.split()
+                    if a.getextrema() == (0, 0):
+                        img = Image.merge("RGB", (r, g, b))
+                    else:
+                        bg = Image.new("RGB", img.size, (255, 255, 255))
+                        bg.paste(img, mask=a)
+                        img = bg
+                elif img.mode in ("P", "LA"):
                     img = img.convert("RGB")
-                img.save(buf, format="JPEG", quality=90)
+                buf = io.BytesIO()
+                img.save(buf, format="JPEG", quality=92)
                 return buf.getvalue()
         except Exception as e:
             logger.error(f"[VisionEngine] Error grabbing clipboard image: {e}")
