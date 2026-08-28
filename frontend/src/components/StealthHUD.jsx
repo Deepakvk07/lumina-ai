@@ -91,7 +91,8 @@ export const StealthHUD = ({
   const [manualInput, setManualInput] = useState('');
   const [loopbackLevel, setLoopbackLevel] = useState(0);
   const [micLevel, setMicLevel] = useState(0);
-  const [isListening, setIsListening] = useState(false); // Controls loopback gate on backend
+  const [isListening, setIsListening] = useState(false);
+  const [backendOnline, setBackendOnline] = useState(null); // null=checking, true=online, false=offline
 
   // Session History & Debrief Modal state
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
@@ -111,6 +112,21 @@ export const StealthHUD = ({
   const isSnipOpenRef = useRef(false);
   const snipSuspendedClickThroughRef = useRef(false);
   const firstChunkRef = useRef(false);
+
+  // ── Backend health check (polls every 4s) ──
+  useEffect(() => {
+    const checkBackend = async () => {
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/config`, { signal: AbortSignal.timeout(2500) });
+        setBackendOnline(res.ok);
+      } catch {
+        setBackendOnline(false);
+      }
+    };
+    checkBackend();
+    const interval = setInterval(checkBackend, 4000);
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     isClickThroughRef.current = isClickThrough;
@@ -409,6 +425,26 @@ export const StealthHUD = ({
           )}
 
           <div className="bg-[#1a1d27] backdrop-blur-md rounded-2xl border border-white/10 text-white shadow-2xl overflow-hidden">
+            {/* Backend Offline Banner */}
+            {backendOnline === false && (
+              <div className="flex items-center justify-between px-3 py-1.5 bg-red-950/80 border-b border-red-800/60 text-xs">
+                <div className="flex items-center gap-2 text-red-300 font-semibold">
+                  <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse inline-block" />
+                  Backend offline — run <code className="mx-1 px-1.5 py-0.5 bg-red-900/60 border border-red-700 rounded font-mono text-red-200">start_backend.bat</code> to start it
+                </div>
+                <a
+                  href="https://github.com/Deepakvk07/lumina-ai#quick-start"
+                  target="_blank" rel="noreferrer"
+                  className="text-red-400 hover:text-red-200 underline shrink-0 ml-2"
+                >Help</a>
+              </div>
+            )}
+            {backendOnline === true && (
+              <div className="flex items-center gap-1.5 px-3 py-1 bg-emerald-950/40 border-b border-emerald-800/30 text-[10px] text-emerald-400 font-medium">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block" />
+                Backend connected — AI ready
+              </div>
+            )}
             {/* Top Control Header with Drag support */}
             <div
               onMouseDown={handleDragMouseDown}
