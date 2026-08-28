@@ -1,8 +1,7 @@
-// Lumina AI Floating In-Page Assistant
-// Each time this script is re-injected by the icon click, it toggles show/hide.
+﻿// Lumina AI Floating In-Page Assistant
+// Each re-injection by the toolbar icon = toggle show/hide.
 
 (function () {
-  // Safety: never run on video call pages
   const host = window.location.hostname.toLowerCase();
   if (host.includes('meet.google.com') || host.includes('zoom.us') ||
       host.includes('teams.microsoft.com') || host.includes('teams.live.com') ||
@@ -12,12 +11,11 @@
   const existing = document.getElementById(FRAME_ID);
 
   if (existing) {
-    // Already injected — just toggle visibility
     existing.style.display = existing.style.display === 'none' ? 'block' : 'none';
     return;
   }
 
-  // First injection — create and show the floating frame
+  // First injection -- create and show the floating frame
   const iframe = document.createElement('iframe');
   iframe.id = FRAME_ID;
   iframe.src = chrome.runtime.getURL('app.html');
@@ -36,15 +34,55 @@
     'pointer-events: auto',
     'overflow: visible',
     'display: block'
-  ].map(r => r + ' !important').join('; ');
+  ].map(function(r) { return r + ' !important'; }).join('; ');
 
   document.documentElement.appendChild(iframe);
 
+  // Page content extractor for Scan Website feature
+  function extractPageContent() {
+    var clone = document.body.cloneNode(true);
+    clone.querySelectorAll('script,style,noscript,header,footer,nav,aside,iframe').forEach(function(el) { el.remove(); });
+    var areas = [
+      clone.querySelector('main'),
+      clone.querySelector('[role="main"]'),
+      clone.querySelector('article'),
+      clone.querySelector('.content'),
+      clone.querySelector('#content'),
+      clone.querySelector('.question'),
+      clone.querySelector('#question'),
+      clone
+    ].filter(Boolean);
+    var text = areas[0].innerText || areas[0].textContent || '';
+    return text.replace(/[ \t]+/g, ' ').replace(/\n{3,}/g, '\n\n').trim().slice(0, 12000);
+  }
+
+  // Listen for SCAN_PAGE request posted from inside the iframe
+  window.addEventListener('message', function(event) {
+    var frame = document.getElementById(FRAME_ID);
+    if (!frame || event.source !== frame.contentWindow) return;
+    if (event.data && event.data.type === 'LUMINA_SCAN_PAGE') {
+      try {
+        var pageText = extractPageContent();
+        frame.contentWindow.postMessage({
+          type: 'LUMINA_SCAN_RESULT',
+          text: pageText,
+          url: window.location.href,
+          title: document.title
+        }, '*');
+      } catch(err) {
+        frame.contentWindow.postMessage({
+          type: 'LUMINA_SCAN_RESULT',
+          error: 'Could not read page: ' + err.message
+        }, '*');
+      }
+    }
+  });
+
   // Alt+H shortcut on the page
-  window.addEventListener('keydown', (e) => {
+  window.addEventListener('keydown', function(e) {
     if (e.altKey && (e.key === 'h' || e.key === 'H')) {
       e.preventDefault();
-      const f = document.getElementById(FRAME_ID);
+      var f = document.getElementById(FRAME_ID);
       if (f) f.style.display = f.style.display === 'none' ? 'block' : 'none';
     }
   });

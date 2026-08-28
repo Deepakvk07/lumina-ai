@@ -202,31 +202,62 @@ export const QuestionSolver = ({
     fetch(`${API_BASE_URL}/api/listen/stop`, { method: 'POST' }).catch(() => {});
   }, []);
 
-  // 1-Click Scan Full Screen / Entire Website — AUTO SOLVES IMMEDIATELY!
-  const handleScanScreen = async () => {
+  // 1-Click Scan Full Website — reads page text via content.js postMessage bridge
+  const handleScanScreen = () => {
     setIsScanningScreen(true);
     setSolverAnswer('');
-    try {
-      const res = await fetch(`${API_BASE_URL}/api/scan-screen`, { method: 'POST' });
-      if (!res.ok) throw new Error('Screen capture failed');
-      const data = await res.json();
-      if (data.image_base64) {
-        const fullDataUrl = 'data:image/jpeg;base64,' + data.image_base64;
-        setAttachedImage(fullDataUrl);
-        // ⚡ AUTOMATICALLY START SOLVING IMMEDIATELY!
-        executeSolve(
-          'Scan this entire webpage/screen, detect every question/problem visible, and output ONLY the option numbers and answers for each.',
-          fullDataUrl
-        );
-      } else {
-        alert('Failed to capture screen.');
-      }
-    } catch (err) {
-      alert('Could not capture screen. Ensure backend is running.');
-    } finally {
+
+    // Request page content from content.js running in the host page
+    window.parent.postMessage({ type: 'LUMINA_SCAN_PAGE' }, '*');
+
+    // Listen for the response (content.js sends it back)
+    const timeout = setTimeout(() => {
       setIsScanningScreen(false);
-    }
+      setSolverAnswer('Error: Page scan timed out. Make sure the extension is loaded on this page.');
+    }, 6000);
+
+    const handleScanResult = (event) => {
+      if (!event.data || event.data.type !== 'LUMINA_SCAN_RESULT') return;
+      window.removeEventListener('message', handleScanResult);
+      clearTimeout(timeout);
+      setIsScanningScreen(false);
+
+      if (event.data.error) {
+        setSolverAnswer('Error: ' + event.data.error);
+        return;
+      }
+
+      const pageText = event.data.text || '';
+      const pageTitle = event.data.title || '';
+      const pageUrl = event.data.url || '';
+
+      if (!pageText.trim()) {
+        setSolverAnswer('No readable text found on this page.');
+        return;
+      }
+
+      const prompt = `You are a quiz/test solver. Below is the full text content of a webpage.
+
+Page: ${pageTitle}
+URL: ${pageUrl}
+
+PAGE CONTENT:
+${pageText}
+
+---
+TASK: Find ALL questions, MCQs, problems or coding challenges visible on this page. For each one:
+1. State the question briefly
+2. Give the correct answer / option letter
+3. Show working if needed
+
+Be precise and answer every question you find.`;
+
+      executeSolve(prompt, null);
+    };
+
+    window.addEventListener('message', handleScanResult);
   };
+
 
   // Core solve logic
   const executeSolve = async (overridePrompt, overrideImage) => {
