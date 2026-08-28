@@ -34,15 +34,13 @@ class WSClient {
       this.ws.onclose = () => {
         this.isConnected = false;
         this.emit('connection', { status: 'disconnected' });
-        console.log('[WS] Connection closed. Reconnecting in 2s...');
         setTimeout(() => this.connect(url), this.reconnectInterval);
       };
 
-      this.ws.onerror = (err) => {
-        console.error('[WS] WebSocket error:', err);
+      this.ws.onerror = () => {
+        // Quiet error handler to avoid triggering Chrome extension error alerts
       };
-    } catch (e) {
-      console.error('[WS] Connection failed:', e);
+    } catch (_) {
       setTimeout(() => this.connect(url), this.reconnectInterval);
     }
   }

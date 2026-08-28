@@ -25,14 +25,14 @@ export default function App() {
   };
 
   useEffect(() => {
-    // Fetch initial config from backend
-    fetch(`${API_BASE_URL}/api/config`)
-      .then((res) => res.json())
+    // Fetch initial config from backend (graceful fallback when offline)
+    fetch(`${API_BASE_URL}/api/config`, { signal: AbortSignal.timeout(2000) })
+      .then((res) => (res.ok ? res.json() : null))
       .then((data) => {
-        setConfig(data);
+        if (data) setConfig(data);
       })
-      .catch((err) => {
-        console.warn('Backend offline, using defaults:', err);
+      .catch(() => {
+        // Quiet fallback to built-in default preferences when backend is offline
       });
 
     // Initialize WS connection
