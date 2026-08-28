@@ -1,7 +1,7 @@
-// Lumina AI In-Page Assistant (100% Meeting Safe & Default Hidden)
+// Lumina AI Floating In-Page Assistant
 
-(() => {
-  // 1. Safety Check: Never inject into live meeting or video call frames
+(function() {
+  // Safety: never inject on video call pages
   const host = window.location.hostname.toLowerCase();
   if (
     host.includes('meet.google.com') ||
@@ -10,14 +10,18 @@
     host.includes('teams.live.com') ||
     host.includes('discord.com') ||
     host.includes('slack.com')
-  ) {
+  ) return;
+
+  // If already injected, just toggle visibility
+  const existing = document.getElementById('lumina-hud-frame');
+  if (existing) {
+    existing.style.display = existing.style.display === 'none' ? 'block' : 'none';
     return;
   }
 
-  if (document.getElementById('lumina-floating-hud-frame')) return;
-
+  // Create the floating iframe
   const iframe = document.createElement('iframe');
-  iframe.id = 'lumina-floating-hud-frame';
+  iframe.id = 'lumina-hud-frame';
   iframe.src = chrome.runtime.getURL('app.html');
   iframe.allow = 'microphone *; clipboard-read *; clipboard-write *';
   iframe.style.cssText = `
@@ -33,33 +37,26 @@
     z-index: 2147483647 !important;
     pointer-events: auto !important;
     overflow: visible !important;
-    color-scheme: light !important;
-    display: none !important;
-    transition: opacity 0.15s ease, transform 0.15s ease !important;
+    display: block !important;
+    transition: opacity 0.2s ease !important;
   `;
-
   document.documentElement.appendChild(iframe);
 
-  let isHidden = true;
-
-  const toggleHide = () => {
-    isHidden = !isHidden;
-    iframe.style.display = isHidden ? 'none' : 'block';
-  };
-
-  // Global hotkeys Alt+H / Ctrl+Shift+H to toggle in-page overlay
-  window.addEventListener('keydown', (e) => {
-    if ((e.altKey && (e.key === 'h' || e.key === 'H')) ||
-        ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'h' || e.key === 'H'))) {
-      e.preventDefault();
-      toggleHide();
+  // Listen for toggle messages from background
+  chrome.runtime.onMessage.addListener((req) => {
+    const frame = document.getElementById('lumina-hud-frame');
+    if (!frame) return;
+    if (req.action === 'TOGGLE_OVERLAY') {
+      frame.style.display = frame.style.display === 'none' ? 'block' : 'none';
     }
   });
 
-  // Listen for Background Hotkeys & Messages
-  chrome.runtime.onMessage.addListener((req) => {
-    if (req.action === 'TOGGLE_OVERLAY') {
-      toggleHide();
+  // Alt+H keyboard shortcut on the page
+  window.addEventListener('keydown', (e) => {
+    if (e.altKey && (e.key === 'h' || e.key === 'H')) {
+      e.preventDefault();
+      const frame = document.getElementById('lumina-hud-frame');
+      if (frame) frame.style.display = frame.style.display === 'none' ? 'block' : 'none';
     }
   });
 })();

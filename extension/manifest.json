@@ -32,8 +32,7 @@
       "16": "icons/icon16.png",
       "48": "icons/icon48.png",
       "128": "icons/icon128.png"
-    },
-    "default_popup": "app.html"
+    }
   },
   "side_panel": {
     "default_path": "sidepanel.html"
@@ -76,13 +75,7 @@
       "suggested_key": {
         "default": "Alt+H"
       },
-      "description": "100% Invisible Hide/Show Floating Assistant"
-    },
-    "open_sidepanel": {
-      "suggested_key": {
-        "default": "Alt+S"
-      },
-      "description": "Open Lumina Full Side Panel"
+      "description": "Show/Hide Floating Lumina AI Assistant on Page"
     }
   }
 }
