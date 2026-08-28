@@ -41,40 +41,40 @@ export const AudioVisualizer = ({ loopbackLevel = 0, micLevel = 0, isAudioActive
   const isMicSpeaking = micLevel > 0.003;
 
   return (
-    <div className="flex items-center gap-3.5 bg-white px-3 py-1.5 rounded-lg border border-gray-200 shadow-xs text-xs">
+    <div className="flex items-center gap-3.5 bg-gray-800/80 px-3 py-1.5 rounded-lg border border-gray-700/80 text-xs">
       {/* Interviewer Audio Meter */}
       <div className="flex items-center gap-2">
         <div className="flex items-center gap-1">
-          <Volume2 className={`w-3.5 h-3.5 transition-colors ${isInterviewerSpeaking ? 'text-indigo-600' : 'text-gray-400'}`} />
-          <span className={`text-[11px] font-medium transition-colors ${isInterviewerSpeaking ? 'text-indigo-700 font-semibold' : 'text-gray-600'}`}>
+          <Volume2 className={`w-3.5 h-3.5 transition-colors ${isInterviewerSpeaking ? 'text-violet-400' : 'text-gray-500'}`} />
+          <span className={`text-[11px] font-medium transition-colors ${isInterviewerSpeaking ? 'text-violet-300 font-semibold' : 'text-gray-500'}`}>
             Interviewer
           </span>
         </div>
-        <div className="flex items-end gap-[2px] h-4 w-16 px-1 py-[2px] bg-gray-100/90 rounded overflow-hidden">
+        <div className="flex items-end gap-[2px] h-4 w-16 px-1 py-[2px] bg-gray-900 rounded overflow-hidden">
           {interviewerBars.map((bar, i) => (
             <div
               key={i}
-              className="flex-1 bg-gradient-to-t from-indigo-600 to-indigo-400 rounded-t-xs transition-all duration-75 ease-out"
+              className="flex-1 bg-gradient-to-t from-violet-600 to-violet-400 rounded-t-xs transition-all duration-75 ease-out"
               style={{ height: bar.height, opacity: bar.opacity }}
             />
           ))}
         </div>
         {isInterviewerSpeaking && (
-          <span className="w-2 h-2 rounded-full bg-indigo-500 animate-ping" />
+          <span className="w-2 h-2 rounded-full bg-violet-500 animate-ping" />
         )}
       </div>
 
-      <div className="w-[1px] h-4 bg-gray-200" />
+      <div className="w-[1px] h-4 bg-gray-700" />
 
       {/* Candidate Mic Meter */}
       <div className="flex items-center gap-2">
         <div className="flex items-center gap-1">
-          <Mic className={`w-3.5 h-3.5 transition-colors ${isMicSpeaking ? 'text-emerald-600' : 'text-gray-400'}`} />
-          <span className={`text-[11px] font-medium transition-colors ${isMicSpeaking ? 'text-emerald-700 font-semibold' : 'text-gray-600'}`}>
+          <Mic className={`w-3.5 h-3.5 transition-colors ${isMicSpeaking ? 'text-emerald-400' : 'text-gray-500'}`} />
+          <span className={`text-[11px] font-medium transition-colors ${isMicSpeaking ? 'text-emerald-300 font-semibold' : 'text-gray-500'}`}>
             You (Mic)
           </span>
         </div>
-        <div className="flex items-end gap-[2px] h-4 w-16 px-1 py-[2px] bg-gray-100/90 rounded overflow-hidden">
+        <div className="flex items-end gap-[2px] h-4 w-16 px-1 py-[2px] bg-gray-900 rounded overflow-hidden">
           {micBars.map((bar, i) => (
             <div
               key={i}

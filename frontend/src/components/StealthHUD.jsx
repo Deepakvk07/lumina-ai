@@ -405,31 +405,31 @@ export const StealthHUD = ({
         >
           {/* Eye-Contact Camera Alignment Notch Dot */}
           {isEyeContact && (
-            <div className="w-2.5 h-1 bg-indigo-600 rounded-full mx-auto mb-0.5 opacity-80 animate-pulse" title="Direct Camera Eye-Contact Line" />
+            <div className="w-2.5 h-1 bg-violet-600 rounded-full mx-auto mb-0.5 opacity-80 animate-pulse" title="Direct Camera Eye-Contact Line" />
           )}
 
-          <div className="bg-white/95 backdrop-blur-md rounded-2xl border border-gray-200 text-gray-900 shadow-xl overflow-hidden">
+          <div className="bg-[#1a1d27] backdrop-blur-md rounded-2xl border border-white/10 text-white shadow-2xl overflow-hidden">
             {/* Top Control Header with Drag support */}
             <div
               onMouseDown={handleDragMouseDown}
-              className="flex items-center justify-between px-4 py-2 bg-gray-50/95 border-b border-gray-200 cursor-move select-none"
+              className="flex items-center justify-between px-3 py-1.5 bg-[#13151f] border-b border-white/8 cursor-move select-none"
               title="Click and drag to move HUD box anywhere"
             >
               {/* Left Title & Status Badges */}
               <div className="flex items-center gap-2.5">
-                <div className="flex items-center gap-1.5 font-bold text-xs tracking-tight text-gray-900">
-                  <span className="w-2 h-2 rounded-full bg-indigo-600" />
-                  <span>Lumina HUD</span>
+                <div className="flex items-center gap-1.5 font-bold text-xs tracking-tight">
+                  <span className="bg-violet-600 text-white text-[10px] font-bold px-2 py-0.5 rounded mr-1">LUMINA</span>
+                  <span className="text-gray-400 text-[11px] font-medium">Live Voice Assistant & Solver</span>
                 </div>
 
                 {isEyeContact && (
-                  <span className="text-[10px] px-2 py-0.5 rounded-md bg-indigo-50 text-indigo-700 border border-indigo-200 font-medium flex items-center gap-1">
+                  <span className="text-[10px] px-2 py-0.5 rounded-md bg-violet-900/50 text-violet-300 border-violet-700 font-medium flex items-center gap-1">
                     <Eye className="w-2.5 h-2.5" /> Eye-Contact Mode
                   </span>
                 )}
 
                 {isClickThrough && (
-                  <span className="text-[10px] px-2 py-0.5 rounded-md bg-amber-50 text-amber-600 border border-amber-200 font-medium">
+                  <span className="text-[10px] px-2 py-0.5 rounded-md bg-amber-900/50 text-amber-400 border-amber-700 font-medium">
                     Click-Through Active
                   </span>
                 )}
@@ -441,11 +441,11 @@ export const StealthHUD = ({
               <AudioVisualizer loopbackLevel={loopbackLevel} micLevel={micLevel} />
 
               {/* Right Controls */}
-              <div className="flex items-center gap-1.5 text-gray-600 text-xs">
+              <div className="flex items-center gap-1.5 text-gray-500 text-xs">
                 {/* ── Auto-Listening Active Badge ── */}
                 <div
                   title="Automatic live audio capture is active. Transcribes interviewer voice in real-time."
-                  className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-700 font-bold text-[10.5px] select-none"
+                  className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-950/70 border border-emerald-700/60 text-emerald-400 font-bold text-[10.5px] select-none"
                 >
                   <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse inline-block" />
                   <span>Auto-Listening</span>
@@ -456,9 +456,9 @@ export const StealthHUD = ({
                   type="button"
                   onClick={onSwitchToSolver}
                   title="Switch to Question Solver (Coding, Aptitude, Reasoning, MCQ)"
-                  className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white border border-gray-200 hover:bg-indigo-50 hover:border-indigo-300 text-gray-600 hover:text-indigo-600 text-[11px] font-semibold transition cursor-pointer"
+                  className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-gray-800/80 border border-gray-700 hover:bg-violet-900/30 hover:border-violet-600/50 text-gray-400 hover:text-violet-300 text-[11px] font-semibold transition cursor-pointer"
                 >
-                  <Zap className="w-3 h-3 text-indigo-600" />
+                  <Zap className="w-3 h-3 text-violet-600" />
                   <span>Solver</span>
                 </button>
 
@@ -468,7 +468,7 @@ export const StealthHUD = ({
                     type="button"
                     onClick={resetPosition}
                     title="Reset position to top center"
-                    className="p-1.5 rounded-lg bg-white border border-gray-200 hover:bg-gray-50 text-gray-500 transition cursor-pointer"
+                    className="p-1.5 rounded-lg bg-gray-800/80 border border-gray-700 hover:bg-gray-700 text-gray-400 hover:text-white transition cursor-pointer"
                   >
                     <RotateCcw className="w-3 h-3" />
                   </button>
@@ -481,8 +481,8 @@ export const StealthHUD = ({
                   title={isEyeContact ? "Switch to Floating Mode" : "Center Directly Under Webcam (Eye-Contact Mode)"}
                   className={`p-1.5 rounded-lg border transition cursor-pointer ${
                     isEyeContact 
-                      ? 'bg-indigo-50 border-indigo-300 text-indigo-600 font-semibold' 
-                      : 'bg-white border-gray-200 hover:bg-gray-50 text-gray-600'
+                      ? 'bg-violet-900/50 border border-violet-600 text-violet-300 transition cursor-pointer' 
+                      : 'bg-gray-800/80 border border-gray-700 hover:bg-gray-700 text-gray-400 transition cursor-pointer'
                   }`}
                 >
                   <Eye className="w-3.5 h-3.5" />
@@ -493,11 +493,11 @@ export const StealthHUD = ({
                   type="button"
                   onClick={openHistoryModal}
                   title="Session History & AI Debrief"
-                  className="p-1.5 rounded-lg bg-white border border-gray-200 hover:bg-gray-50 text-gray-600 hover:text-indigo-600 transition relative cursor-pointer"
+                  className="p-1.5 rounded-lg bg-gray-800/80 border border-gray-700 hover:bg-gray-700 text-gray-400 hover:text-white transition relative cursor-pointer"
                 >
                   <History className="w-3.5 h-3.5" />
                   {historyCount > 0 && (
-                    <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-indigo-600 text-white rounded-full text-[9px] font-bold flex items-center justify-center">
+                    <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-violet-600 text-white rounded-full text-[9px] font-bold flex items-center justify-center">
                       {historyCount}
                     </span>
                   )}
@@ -508,7 +508,7 @@ export const StealthHUD = ({
                   type="button"
                   onClick={openSnip}
                   title="Snip Screen Coding Problem"
-                  className="p-1.5 rounded-lg bg-white border border-gray-200 hover:bg-gray-50 text-gray-600 hover:text-indigo-600 transition cursor-pointer"
+                  className="p-1.5 rounded-lg bg-gray-800/80 border border-gray-700 hover:bg-gray-700 text-gray-400 hover:text-white transition cursor-pointer"
                 >
                   <Code className="w-3.5 h-3.5" />
                 </button>
@@ -520,8 +520,8 @@ export const StealthHUD = ({
                   title="Toggle Mouse Click-Through (Ctrl+Shift+T)"
                   className={`p-1.5 rounded-lg border transition cursor-pointer ${
                     isClickThrough 
-                      ? 'bg-amber-50 border-amber-300 text-amber-600' 
-                      : 'bg-white border-gray-200 hover:bg-gray-50 text-gray-600'
+                      ? 'bg-amber-900/50 border border-amber-600 text-amber-400 transition cursor-pointer' 
+                      : 'bg-gray-800/80 border border-gray-700 hover:bg-gray-700 text-gray-400 transition cursor-pointer'
                   }`}
                 >
                   <MousePointer className="w-3.5 h-3.5" />
@@ -532,7 +532,7 @@ export const StealthHUD = ({
                   type="button"
                   onClick={() => setIsMinimized(!isMinimized)}
                   title={isMinimized ? "Expand HUD" : "Minimize HUD"}
-                  className="p-1.5 rounded-lg bg-white border border-gray-200 hover:bg-gray-50 text-gray-600 transition cursor-pointer"
+                  className="p-1.5 rounded-lg bg-gray-800/80 border border-gray-700 hover:bg-gray-700 text-gray-400 hover:text-white transition cursor-pointer"
                 >
                   {isMinimized ? <Maximize2 className="w-3.5 h-3.5" /> : <Minimize2 className="w-3.5 h-3.5" />}
                 </button>
@@ -542,7 +542,7 @@ export const StealthHUD = ({
                   type="button"
                   onClick={() => setIsHidden(true)}
                   title="Hide HUD (Ctrl+Shift+H)"
-                  className="p-1.5 rounded-lg bg-white border border-gray-200 hover:bg-gray-50 text-gray-600 hover:text-indigo-600 transition cursor-pointer"
+                  className="p-1.5 rounded-lg bg-gray-800/80 border border-gray-700 hover:bg-gray-700 text-gray-400 hover:text-white transition cursor-pointer"
                 >
                   <EyeOff className="w-3.5 h-3.5" />
                 </button>
@@ -552,7 +552,7 @@ export const StealthHUD = ({
                   type="button"
                   onClick={onOpenSettings}
                   title="Preferences & Setup"
-                  className="p-1.5 rounded-lg bg-white border border-gray-200 hover:bg-gray-50 text-gray-600 transition cursor-pointer"
+                  className="p-1.5 rounded-lg bg-gray-800/80 border border-gray-700 hover:bg-gray-700 text-gray-400 hover:text-white transition cursor-pointer"
                 >
                   <Sliders className="w-3.5 h-3.5" />
                 </button>
@@ -562,7 +562,7 @@ export const StealthHUD = ({
                   type="button"
                   onClick={onBackToLauncher}
                   title="Return to Mode Selector"
-                  className="p-1.5 rounded-lg bg-white border border-gray-200 hover:bg-gray-50 text-gray-600 hover:text-rose-600 transition cursor-pointer"
+                  className="p-1.5 rounded-lg bg-gray-800/80 border border-gray-700 hover:bg-gray-700 text-gray-400 hover:text-white transition cursor-pointer"
                 >
                   <X className="w-3.5 h-3.5" />
                 </button>
@@ -575,11 +575,11 @@ export const StealthHUD = ({
                 {/* Question Banner */}
                 <div className={`flex items-start gap-2.5 px-3 py-2 rounded-xl transition-colors ${
                   isInterim 
-                    ? 'bg-amber-50/80 border border-amber-200' 
-                    : 'bg-indigo-50 border border-indigo-200'
+                    ? 'bg-amber-950/50 border border-amber-800/40' 
+                    : 'bg-violet-950/50 border border-violet-800/40'
                 }`}>
                   <span className={`text-[11px] font-bold uppercase tracking-wider text-white px-2 py-0.5 rounded whitespace-nowrap mt-0.5 flex items-center gap-1 ${
-                    isInterim ? 'bg-amber-600 animate-pulse' : 'bg-indigo-600'
+                    isInterim ? 'bg-amber-600 animate-pulse' : 'bg-violet-600'
                   }`}>
                     {isInterim ? (
                       <>
@@ -590,12 +590,12 @@ export const StealthHUD = ({
                       'Question'
                     )}
                   </span>
-                  <p className="text-xs font-semibold text-gray-800 leading-relaxed flex-1">
+                  <p className="text-xs font-semibold text-gray-200 leading-relaxed flex-1">
                     {currentQuestion}
                     {isInterim && <span className="inline-block w-1.5 h-3.5 bg-amber-500 animate-pulse ml-1 align-middle" />}
                   </p>
                   {isGenerating && (
-                    <div className="flex items-center gap-1 text-[11px] text-indigo-600 font-mono animate-pulse whitespace-nowrap">
+                    <div className="flex items-center gap-1 text-[11px] text-violet-400 font-mono animate-pulse whitespace-nowrap">
                       <Sparkles className="w-3.5 h-3.5" />
                       <span>Streaming...</span>
                     </div>
@@ -603,14 +603,14 @@ export const StealthHUD = ({
                 </div>
 
                 {/* Answer Content Card */}
-                <div className="bg-gray-50 border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+                <div className="bg-gray-900/80 border border-gray-800 rounded-xl overflow-hidden shadow-sm">
                   {/* Top Toolbar */}
-                  <div className="flex items-center justify-between px-3.5 py-1.5 bg-gray-100/80 border-b border-gray-200 min-h-[34px]">
+                  <div className="flex items-center justify-between px-3.5 py-1.5 bg-[#13151f] border-b border-gray-800 min-h-[34px]">
                     <div className="flex items-center gap-1.5 text-xs font-semibold text-gray-700">
-                      <Sparkles className="w-3.5 h-3.5 text-indigo-600" />
+                      <Sparkles className="w-3.5 h-3.5 text-violet-600" />
                       <span>AI Response</span>
                       {isGenerating && (
-                        <span className="text-[11px] font-normal text-indigo-600 font-mono animate-pulse">
+                        <span className="text-[11px] font-normal text-violet-400 font-mono animate-pulse">
                           (streaming...)
                         </span>
                       )}
@@ -620,9 +620,9 @@ export const StealthHUD = ({
                       <button
                         type="button"
                         onClick={handleCopy}
-                        className="px-2.5 py-1 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 hover:text-indigo-600 rounded-md shadow-2xs transition flex items-center gap-1.5 text-xs font-medium cursor-pointer"
+                        className="px-2.5 py-1 bg-white border border-gray-200 hover:bg-gray-50 text-gray-300 hover:text-indigo-600 rounded-md shadow-2xs transition flex items-center gap-1.5 text-xs font-medium cursor-pointer"
                       >
-                        {copied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5 text-gray-500" />}
+                        {copied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5 text-gray-400" />}
                         <span>{copied ? 'Copied' : 'Copy'}</span>
                       </button>
                     )}
@@ -630,7 +630,7 @@ export const StealthHUD = ({
 
                   {/* Text Content */}
                   <div 
-                    className="max-h-80 overflow-y-auto px-4 py-3.5 text-gray-800 markdown-content leading-relaxed"
+                    className="max-h-80 overflow-y-auto px-4 py-3.5 text-gray-300 markdown-content leading-relaxed"
                     style={{ fontSize: `${fontSize}px` }}
                   >
                     {formattedAnswer ? (
@@ -646,10 +646,10 @@ export const StealthHUD = ({
                         <div ref={answerEndRef} />
                       </>
                     ) : (
-                      <div className="py-8 text-center text-gray-400 text-xs">
-                        <Sparkles className="w-5 h-5 mx-auto mb-1.5 text-indigo-400/40" />
-                        <span className="font-semibold text-gray-600">Audio Copilot Ready</span>
-                        <p className="text-[11px] text-gray-400 mt-1 max-w-sm mx-auto">
+                      <div className="py-8 text-center text-gray-500 text-xs">
+                        <Sparkles className="w-5 h-5 mx-auto mb-1.5 text-violet-400/30" />
+                        <span className="font-semibold text-gray-400">Audio Copilot Ready</span>
+                        <p className="text-[11px] text-gray-600 mt-1 max-w-sm mx-auto">
                           Click <b>Listen</b> when interviewer speaks, or type a question below.
                           Answers will be grounded in your resume with STAR structure.
                         </p>
@@ -666,7 +666,7 @@ export const StealthHUD = ({
                       value={manualInput}
                       onChange={(e) => setManualInput(e.target.value)}
                       placeholder="Type follow-up question manually (Press Enter to ask)..."
-                      className="w-full bg-gray-50 border border-gray-300 text-gray-900 placeholder-gray-400 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 rounded-xl px-3.5 py-2 text-xs transition"
+                      className="w-full bg-gray-800 border border-gray-700 text-gray-100 placeholder-gray-600 focus:border-violet-500 focus:ring-1 focus:ring-violet-500 rounded-xl px-3.5 py-2 text-xs transition"
                     />
                   </form>
 
@@ -680,7 +680,7 @@ export const StealthHUD = ({
                       step="0.05"
                       value={opacity}
                       onChange={(e) => setOpacity(parseFloat(e.target.value))}
-                      className="w-16 accent-indigo-600 cursor-pointer"
+                      className="w-16 accent-violet-600 cursor-pointer"
                     />
                   </div>
                 </div>
@@ -692,30 +692,30 @@ export const StealthHUD = ({
       {/* Session History & AI Debrief Modal */}
       {isHistoryOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-xs p-4 animate-in fade-in duration-150">
-          <div className="bg-white w-full max-w-2xl rounded-2xl border border-gray-200 text-gray-900 shadow-2xl flex flex-col max-h-[85vh] overflow-hidden">
+          <div className="bg-gray-900 w-full max-w-2xl rounded-2xl border border-gray-800 text-gray-100 shadow-2xl flex flex-col max-h-[85vh] overflow-hidden">
             {/* Header */}
-            <div className="flex items-center justify-between px-6 py-3.5 bg-gray-50 border-b border-gray-200">
-              <div className="flex items-center gap-2 font-bold text-sm text-gray-900">
-                <History className="w-4 h-4 text-indigo-600" />
+            <div className="flex items-center justify-between px-6 py-3.5 bg-gray-950 border-b border-gray-800">
+              <div className="flex items-center gap-2 font-bold text-sm text-gray-100">
+                <History className="w-4 h-4 text-violet-600" />
                 <span>Interview Session History & AI Debrief</span>
-                <span className="px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 text-xs font-semibold border border-indigo-200">
+                <span className="px-2 py-0.5 rounded-full bg-violet-900/50 text-violet-300 text-xs font-semibold border border-violet-700">
                   {historyList.length} Questions
                 </span>
               </div>
               <button
                 onClick={() => setIsHistoryOpen(false)}
-                className="p-1 rounded-lg hover:bg-gray-200 text-gray-400 hover:text-gray-700 transition cursor-pointer"
+                className="p-1 rounded-lg hover:bg-gray-200 text-gray-400 hover:text-gray-300 transition cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
             {/* Action Bar */}
-            <div className="flex items-center justify-between px-6 py-2.5 bg-white border-b border-gray-100 text-xs">
+            <div className="flex items-center justify-between px-6 py-2.5 bg-gray-900 border-b border-gray-800/60 text-xs">
               <button
                 onClick={generateDebriefReport}
                 disabled={isDebriefLoading || historyList.length === 0}
-                className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white rounded-lg font-semibold flex items-center gap-1.5 transition cursor-pointer shadow-xs"
+                className="px-3 py-1.5 bg-violet-600 hover:bg-indigo-500 disabled:opacity-50 text-white rounded-lg font-semibold flex items-center gap-1.5 transition cursor-pointer shadow-xs"
               >
                 <Award className="w-3.5 h-3.5" />
                 {isDebriefLoading ? 'Generating Debrief...' : 'Generate AI Debrief Report'}
@@ -724,7 +724,7 @@ export const StealthHUD = ({
               {historyList.length > 0 && (
                 <button
                   onClick={handleClearHistory}
-                  className="text-gray-500 hover:text-rose-600 transition flex items-center gap-1 cursor-pointer"
+                  className="text-gray-500 hover:text-red-400 transition flex items-center gap-1 cursor-pointer"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
                   <span>Clear History</span>
@@ -735,21 +735,21 @@ export const StealthHUD = ({
             {/* Body Content */}
             <div className="p-6 overflow-y-auto space-y-4 flex-1 text-xs">
               {debriefMarkdown && (
-                <div className="p-4 bg-indigo-50/60 border border-indigo-200 rounded-xl space-y-3">
-                  <div className="flex items-center justify-between pb-2 border-b border-indigo-200/60">
-                    <span className="font-bold text-indigo-900 flex items-center gap-1.5">
-                      <Award className="w-4 h-4 text-indigo-600" />
+                <div className="p-4 bg-violet-950/40 border border-violet-800/40 rounded-xl space-y-3">
+                  <div className="flex items-center justify-between pb-2 border-b border-violet-800/40">
+                    <span className="font-bold text-violet-300 flex items-center gap-1.5">
+                      <Award className="w-4 h-4 text-violet-600" />
                       AI Assessment & Feedback Report
                     </span>
                     <button
                       onClick={copyDebrief}
-                      className="px-2.5 py-1 bg-white border border-indigo-200 text-indigo-700 hover:bg-indigo-50 rounded-md text-xs font-semibold flex items-center gap-1 transition cursor-pointer"
+                      className="px-2.5 py-1 bg-gray-800 border border-gray-700 hover:bg-gray-700 text-gray-300 hover:text-white rounded-md text-xs font-semibold flex items-center gap-1 transition cursor-pointer"
                     >
                       {debriefCopied ? <Check className="w-3 h-3 text-emerald-600" /> : <Copy className="w-3 h-3" />}
                       <span>{debriefCopied ? 'Copied' : 'Copy Report'}</span>
                     </button>
                   </div>
-                  <div className="markdown-content text-gray-800 leading-relaxed text-xs">
+                  <div className="markdown-content text-gray-300 leading-relaxed text-xs">
                     <ReactMarkdown remarkPlugins={[remarkGfm]}>
                       {cleanMathAndLatex(debriefMarkdown)}
                     </ReactMarkdown>
@@ -760,19 +760,19 @@ export const StealthHUD = ({
               {/* Q&A List */}
               {historyList.length > 0 ? (
                 <div className="space-y-3">
-                  <h4 className="font-semibold text-gray-700 uppercase tracking-wider text-[11px]">Recorded Questions & Answers</h4>
+                  <h4 className="font-semibold text-gray-300 uppercase tracking-wider text-[11px]">Recorded Questions & Answers</h4>
                   {historyList.map((item, idx) => (
-                    <div key={item.id || idx} className="p-3.5 bg-gray-50 border border-gray-200 rounded-xl space-y-2">
+                    <div key={item.id || idx} className="p-3.5 bg-gray-800 border border-gray-700 rounded-xl space-y-2">
                       <div className="flex items-start justify-between gap-2">
                         <div className="flex items-start gap-2">
-                          <span className="px-1.5 py-0.5 bg-indigo-600 text-white rounded text-[10px] font-bold">
+                          <span className="px-1.5 py-0.5 bg-violet-600 text-white rounded text-[10px] font-bold">
                             Q{idx + 1}
                           </span>
-                          <span className="font-semibold text-gray-900">{item.question}</span>
+                          <span className="font-semibold text-gray-200">{item.question}</span>
                         </div>
                         <span className="text-[10px] text-gray-400 font-mono shrink-0">{item.time_str}</span>
                       </div>
-                      <div className="text-gray-700 bg-white p-2.5 rounded-lg border border-gray-200/70 text-xs markdown-content">
+                      <div className="text-gray-300 bg-white p-2.5 rounded-lg border border-gray-200/70 text-xs markdown-content">
                         <ReactMarkdown remarkPlugins={[remarkGfm]} components={{ code: CustomCodeBlock }}>
                           {cleanMathAndLatex(item.answer)}
                         </ReactMarkdown>
@@ -782,9 +782,9 @@ export const StealthHUD = ({
                 </div>
               ) : (
                 <div className="py-12 text-center text-gray-400 space-y-1">
-                  <History className="w-8 h-8 mx-auto text-gray-300" />
-                  <p className="font-medium text-xs text-gray-600">No questions recorded in this session yet.</p>
-                  <p className="text-[11px] text-gray-400">Questions asked during your interview will appear here automatically.</p>
+                  <History className="w-8 h-8 mx-auto text-gray-700" />
+                  <p className="font-medium text-xs text-gray-400">No questions recorded in this session yet.</p>
+                  <p className="text-[11px] text-gray-600">Questions asked during your interview will appear here automatically.</p>
                 </div>
               )}
             </div>

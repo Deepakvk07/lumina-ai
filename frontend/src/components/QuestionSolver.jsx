@@ -333,24 +333,18 @@ export const QuestionSolver = ({
         opacity: opacity,
       }}
     >
-      <div className="bg-white/95 backdrop-blur-md rounded-2xl border border-gray-200 text-gray-900 shadow-2xl overflow-hidden">
+      <div className="bg-[#1a1d27] backdrop-blur-md rounded-2xl border border-white/10 text-white shadow-2xl overflow-hidden">
         {/* Draggable Top Header */}
         <div
           onMouseDown={handleDragMouseDown}
-          className="flex items-center justify-between px-4 py-2 bg-gray-50/95 border-b border-gray-200 cursor-move select-none"
+          className="flex items-center justify-between px-3 py-1.5 bg-[#13151f] border-b border-white/8 cursor-move select-none"
           title="Click and drag to move box anywhere"
         >
           {/* Title & Brand */}
           <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded-lg bg-indigo-600 flex items-center justify-center text-white shadow-2xs">
-              <Zap className="w-3.5 h-3.5" />
-            </div>
-            <div className="flex items-center gap-1.5 font-bold text-xs text-gray-900">
-              <span>Question Solver</span>
-              <span className="text-[10px] font-medium text-emerald-700 px-1.5 py-0.2 bg-emerald-50 rounded border border-emerald-200">
-                Option Only
-              </span>
-            </div>
+            <span className="bg-violet-600 text-white text-[10px] font-bold px-2 py-0.5 rounded">LUMINA</span>
+            <span className="text-gray-400 text-[11px] font-medium ml-1.5">Question Solver</span>
+            <span className="text-[10px] font-medium text-emerald-400 px-1.5 py-0.5 bg-emerald-950/60 rounded border border-emerald-700/50 ml-1">AI Powered</span>
             <Move className="w-3 h-3 text-gray-400 opacity-60 ml-1" />
           </div>
 
@@ -362,7 +356,7 @@ export const QuestionSolver = ({
               onClick={handleScanScreen}
               disabled={isScanningScreen || isGenerating}
               title="Capture whole screen / website & solve questions automatically"
-              className="px-2.5 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-[11px] flex items-center gap-1 transition cursor-pointer disabled:opacity-60 shadow-xs"
+              className="px-2.5 py-1 rounded-lg bg-violet-600 hover:bg-violet-500 text-white font-bold text-[11px] flex items-center gap-1 transition cursor-pointer disabled:opacity-60 shadow-xs"
             >
               <Monitor className={`w-3 h-3 ${isScanningScreen ? 'animate-spin' : ''}`} />
               <span>{isScanningScreen ? 'Scanning...' : 'Scan Website'}</span>
@@ -373,7 +367,7 @@ export const QuestionSolver = ({
               type="button"
               onClick={onSwitchToHUD}
               title="Switch to Live Audio Interview Copilot"
-              className="px-2 py-1 rounded-lg bg-white border border-gray-200 hover:bg-gray-100 text-gray-600 text-[11px] font-semibold flex items-center gap-1 transition cursor-pointer"
+              className="px-2 py-1 rounded-lg bg-gray-800/80 border border-gray-700 hover:bg-gray-700 text-gray-400 hover:text-white text-[11px] font-semibold flex items-center gap-1 transition cursor-pointer"
             >
               <Headphones className="w-3 h-3" />
               <span>Voice HUD</span>
@@ -385,7 +379,7 @@ export const QuestionSolver = ({
                 type="button"
                 onClick={resetPosition}
                 title="Reset position to top center"
-                className="p-1.5 rounded-lg bg-white border border-gray-200 hover:bg-gray-100 text-gray-500 transition cursor-pointer"
+                className="p-1.5 rounded-lg bg-gray-800/80 border border-gray-700 hover:bg-gray-700 text-gray-400 hover:text-white transition cursor-pointer"
               >
                 <RotateCcw className="w-3 h-3" />
               </button>
@@ -396,7 +390,7 @@ export const QuestionSolver = ({
               type="button"
               onClick={() => setIsMinimized(!isMinimized)}
               title={isMinimized ? "Expand Solver" : "Minimize Solver"}
-              className="p-1.5 rounded-lg bg-white border border-gray-200 hover:bg-gray-100 text-gray-600 transition cursor-pointer"
+              className="p-1.5 rounded-lg bg-gray-800/80 border border-gray-700 hover:bg-gray-700 text-gray-400 hover:text-white transition cursor-pointer"
             >
               {isMinimized ? <Maximize2 className="w-3.5 h-3.5" /> : <Minimize2 className="w-3.5 h-3.5" />}
             </button>
@@ -406,7 +400,7 @@ export const QuestionSolver = ({
               type="button"
               onClick={handleCompleteHide}
               title="100% Complete Hide (Press Ctrl+Shift+H to unhide)"
-              className="p-1.5 rounded-lg bg-white border border-gray-200 hover:bg-gray-100 text-gray-600 hover:text-indigo-600 transition cursor-pointer"
+              className="p-1.5 rounded-lg bg-gray-800/80 border border-gray-700 hover:bg-gray-700 text-gray-400 hover:text-white transition cursor-pointer"
             >
               <EyeOff className="w-3.5 h-3.5" />
             </button>
@@ -416,7 +410,7 @@ export const QuestionSolver = ({
               type="button"
               onClick={onOpenSettings}
               title="Settings & API Keys"
-              className="p-1.5 rounded-lg bg-white border border-gray-200 hover:bg-gray-100 text-gray-600 transition cursor-pointer"
+              className="p-1.5 rounded-lg bg-gray-800/80 border border-gray-700 hover:bg-gray-700 text-gray-400 hover:text-white transition cursor-pointer"
             >
               <Sliders className="w-3.5 h-3.5" />
             </button>
@@ -426,7 +420,7 @@ export const QuestionSolver = ({
               type="button"
               onClick={onBackToLauncher}
               title="Return to Mode Selector"
-              className="p-1.5 rounded-lg bg-white border border-gray-200 hover:bg-gray-100 text-gray-600 hover:text-rose-600 transition cursor-pointer"
+              className="p-1.5 rounded-lg bg-gray-800/80 border border-gray-700 hover:bg-gray-700 text-gray-400 hover:text-white transition cursor-pointer"
             >
               <X className="w-3.5 h-3.5" />
             </button>
@@ -437,18 +431,18 @@ export const QuestionSolver = ({
         {!isMinimized && (
           <div className="p-3.5 space-y-3">
             {/* ── ONE UNIFIED PASTE & CAPTURE SECTION ── */}
-            <div className="bg-gray-50 border border-gray-200 rounded-xl p-3 space-y-2.5 shadow-2xs">
-              <div className="flex items-center justify-between text-[11px] font-semibold text-gray-600">
+            <div className="bg-gray-900/60 border border-gray-800 rounded-xl p-3 space-y-2.5">
+              <div className="flex items-center justify-between text-gray-400 text-[11px] font-semibold">
                 <span className="flex items-center gap-1">
-                  <Clipboard className="w-3 h-3 text-indigo-600" />
-                  <span>Paste Screenshot (<kbd className="px-1 py-0.2 bg-white border border-gray-300 rounded text-[10px] font-mono">Ctrl+V</kbd> auto-solves)</span>
+                  <Clipboard className="w-3 h-3 text-violet-400" />
+                  <span>Paste Screenshot (<kbd className="px-1 py-0.5 bg-gray-800 border border-gray-700 rounded text-[10px] font-mono text-gray-300">Ctrl+V</kbd> auto-solves)</span>
                 </span>
                 <div className="flex items-center gap-2">
                   <button
                     type="button"
                     onClick={handleFetchClipboard}
                     disabled={isFetchingClipboard || isGenerating}
-                    className="text-indigo-600 hover:text-indigo-800 hover:underline flex items-center gap-1 cursor-pointer font-bold"
+                    className="text-violet-400 hover:text-indigo-800 hover:underline flex items-center gap-1 cursor-pointer font-bold"
                     title="Grab snip from clipboard (Win+Shift+S)"
                   >
                     <Camera className="w-3 h-3" />
@@ -458,7 +452,7 @@ export const QuestionSolver = ({
                     <button
                       type="button"
                       onClick={handleClear}
-                      className="text-gray-400 hover:text-rose-600 transition flex items-center gap-0.5 cursor-pointer"
+                      className="text-gray-400  transition flex items-center gap-0.5 cursor-pointer"
                       title="Clear input"
                     >
                       <RotateCcw className="w-2.5 h-2.5" />
@@ -480,29 +474,29 @@ export const QuestionSolver = ({
                   }
                 }}
                 placeholder="Paste screenshot (Ctrl+V) for instant auto-solve, or type text (Ctrl+Enter)..."
-                className="w-full text-xs p-2.5 bg-white border border-gray-200 rounded-lg text-gray-800 placeholder-gray-400 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 resize-none transition"
+                className="w-full text-xs p-2.5 bg-gray-800 border border-gray-700 rounded-lg text-gray-200 placeholder-gray-600 focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 resize-none transition"
               />
 
               {/* Attached Image Preview */}
               {attachedImage && (
-                <div className="relative rounded-lg overflow-hidden border border-gray-200 bg-white p-1.5 flex items-center justify-between gap-2 animate-in fade-in zoom-in-95 duration-100">
+                <div className="relative rounded-lg overflow-hidden border border-gray-700 bg-gray-800 p-1.5 flex items-center justify-between gap-2 animate-in fade-in zoom-in-95 duration-100">
                   <div className="flex items-center gap-2 overflow-hidden">
                     <img
                       src={attachedImage}
                       alt="Pasted screenshot"
-                      className="h-12 w-24 object-cover rounded border border-gray-200 shrink-0"
+                      className="h-12 w-24 object-cover rounded border border-gray-700 shrink-0"
                     />
                     <div className="text-[11px] text-gray-600 truncate">
-                      <span className="font-semibold text-emerald-700 flex items-center gap-1">
+                      <span className="text-emerald-400 font-semibold flex items-center gap-1">
                         <Check className="w-3 h-3" /> Screenshot Attached
                       </span>
-                      <p className="text-[10px] text-gray-400">Processing automatically...</p>
+                      <p className="text-gray-500 text-[10px]">Processing automatically...</p>
                     </div>
                   </div>
                   <button
                     type="button"
                     onClick={() => setAttachedImage(null)}
-                    className="p-1 rounded-md hover:bg-gray-100 text-gray-400 hover:text-rose-600 transition cursor-pointer shrink-0"
+                    className="p-1 rounded-md hover:bg-gray-100 text-gray-400  transition cursor-pointer shrink-0"
                     title="Remove attached screenshot"
                   >
                     <X className="w-4 h-4" />
@@ -515,7 +509,7 @@ export const QuestionSolver = ({
                 type="button"
                 onClick={() => executeSolve()}
                 disabled={isGenerating || (!inputText.trim() && !attachedImage)}
-                className="w-full py-2 bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed text-white text-xs font-bold rounded-lg shadow-xs transition flex items-center justify-center gap-2 cursor-pointer"
+                className="w-full py-2 bg-violet-600 hover:bg-violet-500 disabled:opacity-50 text-white font-bold text-sm rounded-xl flex items-center justify-center gap-2 transition cursor-pointer shadow-sm"
               >
                 {isGenerating ? (
                   <>
@@ -532,14 +526,14 @@ export const QuestionSolver = ({
             </div>
 
             {/* ── ANSWER OUTPUT SECTION ── */}
-            <div className="bg-gray-50 border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+            <div className="bg-gray-900/80 border border-gray-800 rounded-xl overflow-hidden shadow-sm">
               {/* Output Header Toolbar */}
-              <div className="flex items-center justify-between px-3.5 py-1.5 bg-gray-100/80 border-b border-gray-200 min-h-[32px]">
-                <div className="flex items-center gap-1.5 text-xs font-bold text-gray-800">
-                  <Sparkles className="w-3.5 h-3.5 text-indigo-600" />
+              <div className="flex items-center justify-between px-3.5 py-1.5 bg-[#13151f] border-b border-gray-800 min-h-[34px]">
+                <div className="flex items-center gap-1.5 text-xs font-semibold text-gray-300">
+                  <Sparkles className="w-3.5 h-3.5 text-violet-400" />
                   <span>Correct Option / Answer</span>
                   {isGenerating && (
-                    <span className="text-[11px] font-normal text-indigo-600 font-mono animate-pulse">
+                    <span className="text-[11px] font-normal text-violet-400 font-mono animate-pulse">
                       (computing...)
                     </span>
                   )}
@@ -549,7 +543,7 @@ export const QuestionSolver = ({
                   <button
                     type="button"
                     onClick={handleCopy}
-                    className="px-2.5 py-1 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 hover:text-indigo-600 rounded-md shadow-2xs transition flex items-center gap-1.5 text-xs font-medium cursor-pointer"
+                    className="px-2.5 py-1 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700  rounded-md shadow-2xs transition flex items-center gap-1.5 text-xs font-medium cursor-pointer"
                   >
                     {copied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5 text-gray-500" />}
                     <span>{copied ? 'Copied' : 'Copy'}</span>
@@ -559,7 +553,7 @@ export const QuestionSolver = ({
 
               {/* Output Markdown Text */}
               <div
-                className="max-h-64 overflow-y-auto px-4 py-3 text-gray-900 markdown-content text-sm font-semibold leading-relaxed"
+                className="max-h-80 overflow-y-auto px-4 py-3.5 text-gray-300 markdown-content leading-relaxed"
                 style={{ fontSize: `${fontSize}px` }}
               >
                 {formattedAnswer ? (
@@ -575,14 +569,14 @@ export const QuestionSolver = ({
                     <div ref={answerEndRef} />
                   </>
                 ) : isGenerating ? (
-                  <div className="py-6 text-center text-indigo-600 animate-pulse space-y-2">
-                    <Sparkles className="w-5 h-5 mx-auto animate-spin text-indigo-600" />
+                  <div className="py-6 text-center text-violet-400 animate-pulse space-y-2">
+                    <Sparkles className="w-5 h-5 mx-auto animate-spin text-violet-400" />
                     <p className="font-bold text-xs text-indigo-700">Solving question with 100% precision...</p>
                     <p className="text-[10.5px] text-gray-400">Verifying mathematical formulas & options...</p>
                   </div>
                 ) : (
-                  <div className="py-5 text-center text-gray-400 text-xs font-normal">
-                    <Zap className="w-5 h-5 mx-auto mb-1 text-indigo-400/40" />
+                  <div className="py-5 text-center text-gray-400 font-semibold">
+                    <Zap className="w-5 h-5 mx-auto mb-1 text-violet-400/30" />
                     <span>Paste screenshot (Ctrl+V) or click <b>Scan Website</b> to see option numbers.</span>
                   </div>
                 )}
